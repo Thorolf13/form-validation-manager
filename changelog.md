@@ -1,3 +1,7 @@
+## #1.0.4
+* fix build
+* add licence
+
 ## #1.0.2
 * add readme
 * add changelog
