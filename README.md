@@ -161,3 +161,135 @@ export default {
   }
 }
 ```
+
+## Messages
+withMessage wrapper allow to customise error message
+
+```js
+export default {
+  data () {
+    return {
+      form:{
+        age: 0
+      }
+    }
+  },
+  validations: {
+    form:{
+      age: and(
+        withMessage(
+          and(required(), numeric()),
+          'field is required and must be a number'
+        ),
+        withMessage(
+          gte(21),
+          'you must be of age'
+        )
+      )
+    }
+  }
+}
+```
+the property '$errors' will contain defined errors messages if field isnt valid
+
+## Custom validation
+### component method
+a component's method can be used as validator
+
+```js
+export default {
+  data () {
+    return {
+      form:{
+        age: 0
+      }
+    }
+  },
+  validations: {
+    form:{
+      age: custom((value, context)=>{
+        return this.myValidationMethod(value, context);
+      })
+    }
+  }
+}
+```
+myValidationMethod must return false if no error and true|string|string[] if one or more errors occured
+
+### Reusable validator
+You may want to define a validator and use it in ndifferent components
+best wxay is to define it in separate .js file
+```js
+export default function myValidator (arg1, arg2 /*, arg3...*/) {
+  return {
+    $params: { name: 'myValidator', arg1, arg2 },
+    hasError: function (value, context) {
+      if( /* test rule 1 KO */){
+        return 'message 1'
+      }
+      if( /* test rule 2 KO */){
+        return 'message 2'
+      }
+
+      // is valid
+      return false
+    },
+    isValid: function (value, context) {
+      return !this.hasError(value, context);
+    }
+  };
+}
+```
+and use it
+
+```js
+import myValidator from './my-validator'
+
+export default {
+  data () {
+    return {
+      form:{
+        age: 0
+      }
+    }
+  },
+  validations: {
+    form:{
+      age: myValidator('val1', 'val2')
+    }
+  }
+}
+```
+
+## Integration with vuetify
+```js
+export default {
+  data () {
+    return {
+      form:{
+        age: 0
+      }
+    }
+  },
+  validations: {
+    form:{
+      age: and(
+        withMessage(
+          and(required(), numeric()),
+          'age is required and must be a number'
+        ),
+        withMessage(
+          gte(21),
+          'you must be of age'
+        )
+      )
+    }
+  }
+}
+```
+
+```html
+<v-text-field
+  :rules="$fvm.form.age.$errors"
+/>
+```

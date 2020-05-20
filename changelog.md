@@ -1,3 +1,6 @@
+## #1.0.8
+* update readme
+
 ## #1.0.7
 * add $invalid and $pristine in validation object
 * update readme
