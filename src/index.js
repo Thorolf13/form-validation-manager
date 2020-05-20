@@ -253,11 +253,6 @@ export default {
           return this._fvm ? this._fvm.validate() : null;
         };
       },
-      // created () {
-      //   if (this._fvm) {
-      //     this._fvm.init();
-      //   }
-      // },
       beforeDestroy () {
         if (this._fvm) {
           this._fvm.destroy();
@@ -265,8 +260,7 @@ export default {
         }
       }
     });
-    // Vue.helpers = helpers;
-    // Vue.prototype.$helpers = helpers;
+
   }
 };
 

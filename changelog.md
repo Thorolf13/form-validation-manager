@@ -1,3 +1,6 @@
+## #1.0.6
+* fix webpack
+
 ## #1.0.5
 * fix package.json
 
