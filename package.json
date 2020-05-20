@@ -1,12 +1,13 @@
 {
   "name": "form-validation-manager",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "VueJs validation manager, model based",
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack --mode production"
   },
   "author": "thorolf13@gmail.com",
+  "homepage": "https://github.com/Thorolf13/form-validation-manager",
   "license": "LGPL3",
   "devDependencies": {
     "@babel/core": "^7.9.6",
