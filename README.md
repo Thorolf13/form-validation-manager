@@ -44,16 +44,65 @@ import { and, required, numeric, gte, length } from 'form-validation-manager'
 export default {
   data () {
     return {
-      name: '',
-      age: 0
+      form:{
+        name: '',
+        age: 0
+      }
     }
   },
   validations: {
-    name: and(required(), length(gte(3)),
-    age: and(required(), numeric(), gte(21))
+    form:{
+      name: and(required(), length(gte(3)),
+      age: and(required(), numeric(), gte(21))
+    }
+  },
+  methods:{
+    submit(){
+      if(this.$fvm.$isValid){
+        //do something
+      }
+    }
   }
 }
 ```
+a validation oject is generated witrh the same tree as 'validations'
+
+```js
+//generated object
+//$fvm
+{
+  $errors:Boolean|String[],
+  $error:Boolean,
+  $isValid:Boolean,
+  $invalid:Boolean,
+  $dirty:Boolean,
+  $pristine:Boolean,
+  form:{
+    $errors:Boolean|String[],
+    $error:Boolean,
+    [...]
+    name:{
+      $errors:Boolean|String[],
+      $error:Boolean,
+      [...]
+    },
+    age:{
+      $errors:Boolean|String[],
+      $error:Boolean,
+      [...]
+    }
+  }
+}
+```
+* _$errors_ : 
+  *  = false or string[]
+  *  For each 'non-final' node $errors Array concatenate $errors of sub nodes
+*  _$error_ : node (or sub nodes) has one or more errors
+*  _$isvalid_ : node (or sub nodes) as no errors
+*  _$invalid_ : node (or sub nodes) has one or more errors
+*  _$dirty_ : : node (or sub nodes) have been edited by user
+*  _$pristine : : node (or sub nodes) have not been edited by user
+
 
 ## Validtors
 ### values validation
@@ -86,4 +135,29 @@ dynamic((value, context):Validator=>{}) // dynamic validators definition
 empty() // always ok validator
 custom((value, context):Boolean|String=>{}) // allow user to create custom validators
 revalidate(path) // forcxe another property revalidation if this one change
+```
+
+## Arrays
+
+A special node '$each' allow to validate each elements of an array
+
+```js
+export default {
+  data () {
+    return {
+      form:{
+        list : [-1, 5, 10]
+      }
+    }
+  },
+  validations: {
+    form:{
+      list:{
+        $each : {
+          gt(0)
+        }
+      }
+    }
+  }
+}
 ```

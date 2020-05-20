@@ -1,3 +1,7 @@
+## #1.0.7
+* add $invalid and $pristine in validation object
+* update readme
+
 ## #1.0.6
 * fix webpack
 
