@@ -10,7 +10,6 @@ import numeric from './validators/numeric';
 import between from './validators/between';
 
 import withMessage from './validators/utils/with-message';
-import dynamic from './validators/utils/dynamic';
 import custom from './validators/utils/custom';
 import revalidate from './validators/utils/revalidate';
 import empty from './validators/utils/empty';
@@ -70,7 +69,6 @@ export {
   not,
   _if,
   withMessage,
-  dynamic,
   custom,
   revalidate,
   empty

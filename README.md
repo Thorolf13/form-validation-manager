@@ -131,7 +131,6 @@ not(validator)
 pick(property, validator) // validate value[property] instead of value itself
 length(validator) // pick length
 withMessage(validator,message) // customise validator message
-dynamic((value, context):Validator=>{}) // dynamic validators definition
 empty() // always ok validator
 custom((value, context):Boolean|String=>{}) // allow user to create custom validators
 revalidate(path) // forcxe another property revalidation if this one change
