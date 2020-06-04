@@ -1,4 +1,4 @@
-import Fvm from './fvm';
+import mixin from './mixin';
 
 import lt from './validators/lt';
 import lte from './validators/lte';
@@ -20,39 +20,7 @@ import and from './validators/logic/and';
 import not from './validators/logic/not';
 import _if from './validators/logic/if';
 
-
-export default {
-  install (Vue, options) {
-    const validationsPropertyName = options && options.validationsPropertyName ? options.validationsPropertyName : 'validations';
-
-    Vue.mixin({
-      data () {
-        const vals = this.$options[validationsPropertyName];
-        if (vals) {
-          this._fvm = new Fvm(this, vals);
-        }
-        return {};
-      },
-      beforeCreate () {
-        const options = this.$options;
-        const vals = options[validationsPropertyName];
-        if (!vals) return;
-        if (!options.computed) options.computed = {};
-        if (options.computed.$fvm) return;
-        options.computed.$fvm = function () {
-          return this._fvm ? this._fvm.validate() : null;
-        };
-      },
-      beforeDestroy () {
-        if (this._fvm) {
-          this._fvm.destroy();
-          this._fvm = null;
-        }
-      }
-    });
-
-  }
-};
+export default mixin;
 
 export {
   lt,
