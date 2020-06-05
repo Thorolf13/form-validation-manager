@@ -119,11 +119,11 @@ between(min,max[,exclude])
 
 ### logic
 ```js
-and(...validators)
-or(...validators)
-xor(...validators)
-_if(condition:Boolean|(value,context):Boolean=>{}, validator)
-not(validator)
+and(...validators) // all validators must be ok
+or(...validators) // minimum one validtor must be ok
+xor(...validators) // only one validator must be ok
+_if(condition:(value,context)=>Boolean, validator) // apply validator only if condition return value is true
+not(validator) // validaot must be KO
 ```
   
 ### specials
@@ -132,7 +132,7 @@ pick(property, validator) // validate value[property] instead of value itself
 length(validator) // pick length
 withMessage(validator,message) // customise validator message
 empty() // always ok validator
-custom((value, context):Boolean|String=>{}) // allow user to create custom validators
+custom((value, context)=>Boolean|String|String[]) // allow user to create custom validators
 revalidate(path) // forcxe another property revalidation if this one change
 ```
 

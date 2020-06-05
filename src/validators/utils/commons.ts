@@ -1,4 +1,4 @@
-export const req = function (value) {
+export const req = function (value: any) {
   if (value === null || value === undefined) {
     return 'NULL_UNDEFINED';
   }

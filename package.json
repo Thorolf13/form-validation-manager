@@ -1,6 +1,6 @@
 {
   "name": "form-validation-manager",
-  "version": "1.0.8",
+  "version": "1.2.0",
   "description": "VueJs validation manager, model based",
   "main": "dist/index.js",
   "scripts": {
@@ -12,12 +12,13 @@
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "babel-loader": "^8.1.0",
+    "@types/lodash": "^4.14.151",
+    "ts-loader": "^7.0.4",
+    "typescript": "^3.9.2",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"
   },
-  "dependencies": {
-    "lodash": "^4.17.15"
-  },
+  "dependencies": {},
   "files": [
     "dist/*",
     "src/*"
