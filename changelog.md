@@ -1,3 +1,7 @@
+## 1.2.10
+* export types
+* fix/update readme
+
 ## 1.2.9
 * add unit test for validators
 * fix validators

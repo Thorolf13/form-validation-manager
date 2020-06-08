@@ -23,6 +23,8 @@ import andSequence from './validators/logic/and_sequence';
 import not from './validators/logic/not';
 import _if from './validators/logic/if';
 
+import { Validator, Context } from './validators/validator'
+
 export default mixin;
 
 export {
@@ -34,16 +36,21 @@ export {
   required,
   numeric,
   between,
+
   or,
   xor,
   and,
   andSequence,
   not,
   _if,
+
   withMessage,
   custom,
   revalidate,
   empty,
   pick,
-  length
+  length,
+
+  Validator,
+  Context
 };

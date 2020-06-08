@@ -80,7 +80,10 @@ a validation oject is generated witrh the same tree as 'validations'
   form:{
     $errors:Boolean|String[],
     $error:Boolean,
-    [...]
+    $isValid:Boolean,
+    $invalid:Boolean,
+    $dirty:Boolean,
+    $pristine:Boolean,
     name:{
       $errors:Boolean|String[],
       $error:Boolean,
@@ -96,34 +99,35 @@ a validation oject is generated witrh the same tree as 'validations'
 ```
 * _$errors_ : 
   *  = false or string[]
-  *  For each 'non-final' node $errors Array concatenate $errors of sub nodes
+  *  For each 'non-final' node : $errors Array concatenate $errors of sub nodes
 *  _$error_ : node (or sub nodes) has one or more errors
 *  _$isvalid_ : node (or sub nodes) as no errors
 *  _$invalid_ : node (or sub nodes) has one or more errors
-*  _$dirty_ : : node (or sub nodes) have been edited by user
-*  _$pristine : : node (or sub nodes) have not been edited by user
+*  _$dirty_ : node (or sub nodes) have been edited by user
+*  _$pristine_ : node (or sub nodes) have not been edited by user
 
 
 ## Validtors
 ### values validation
 ```js
 required()
-eq(value)
-numeric()
-gt(min)
-gte(min)
-lt(max)
-lte(max)
+eq(value) // equal
+numeric() // is numeric
+gt(min) // greater than >
+gte(min) // greather than equal >=
+lt(max) // lether than <
+lte(max) //lether than equal <=
 between(min,max[,exclude])
 ```
 
 ### logic
 ```js
 and(...validators) // all validators must be ok
+andSequence(...validators) // all validators must be ok, call next validator only if previous one is OK
 or(...validators) // minimum one validtor must be ok
 xor(...validators) // only one validator must be ok
-_if(condition:(value,context)=>Boolean, validator) // apply validator only if condition return value is true
-not(validator) // validaot must be KO
+_if(condition:(value,context)=>Boolean, validator) // apply validator only if condition returned value is true
+not(validator) // validator must be KO
 ```
   
 ### specials
@@ -193,7 +197,8 @@ the property '$errors' will contain defined errors messages if field isnt valid
 
 ## Custom validation
 ### component method
-a component's method can be used as validator
+a custom method can be used as validator.
+inside this one, 'this' refer to current component
 
 ```js
 export default {
@@ -206,9 +211,14 @@ export default {
   },
   validations: {
     form:{
-      age: custom((value, context)=>{
+      age: custom(function(value, context){ //do not use arrow function if you want to use 'this'
         return this.myValidationMethod(value, context);
       })
+    }
+  },
+  methods:{
+    myValidationMethod(){
+      // ...
     }
   }
 }
@@ -219,10 +229,10 @@ myValidationMethod must return false if no error and true|string|string[] if one
 You may want to define a validator and use it in ndifferent components
 best wxay is to define it in separate .js file
 ```js
-export default function myValidator (arg1, arg2 /*, arg3...*/) {
-  return {
-    $params: { name: 'myValidator', arg1, arg2 },
-    hasError: function (value, context) {
+import { Validator } from 'form-validation-manager';
+
+export default function myValidator(arg1, arg2) {
+  return new Validator('myValidator', (value, context) => {
       if( /* test rule 1 KO */){
         return 'message 1'
       }
@@ -232,11 +242,7 @@ export default function myValidator (arg1, arg2 /*, arg3...*/) {
 
       // is valid
       return false
-    },
-    isValid: function (value, context) {
-      return !this.hasError(value, context);
-    }
-  };
+  });
 }
 ```
 and use it
