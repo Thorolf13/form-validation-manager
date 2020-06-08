@@ -1,3 +1,21 @@
+## 1.2.8
+* fix and_sequence, lt, lte, gt, gte validators
+
+## 1.2.7
+* export pick and length validators
+
+## 1.2.5
+* fix packaging
+
+## 1.2.4
+* custom validation : null or undefined equal to no error
+
+## 1.2.3
+* fix custom validator call
+
+## 1.2.2
+* fix imports
+
 ## 1.2.0
 * remove dependency lodash
 
