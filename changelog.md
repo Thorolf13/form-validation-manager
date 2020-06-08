@@ -1,3 +1,7 @@
+## 1.2.9
+* add unit test for validators
+* fix validators
+
 ## 1.2.8
 * fix and_sequence, lt, lte, gt, gte validators
 
