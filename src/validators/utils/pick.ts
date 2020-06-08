@@ -1,9 +1,12 @@
+import { Validator } from '../validator';
+
 export default function pick(property: string, validator: Validator) {
   return new Validator('pick', (value, context) => {
-    try {
+
+    if (value && value.hasOwnProperty(property)) {
       const prop = value[property];
       return validator.hasError(prop, context);
-    } catch (e) {
+    } else {
       return 'UNKNOW_PROPERTY';
     }
   });

@@ -1,6 +1,7 @@
 import and_sequence from './logic/and_sequence';
 import required from './required';
 import numeric from './numeric';
+import { Validator } from './validator';
 
 export default function gte(min: number) {
   return new Validator('gte', (value, context) => {

@@ -1,30 +1,26 @@
-type ValidatorParams = {
-  name: string,
-  children?: ValidatorParams[]
-  [key: string]: any
+export type Component = any;
+
+export type Context = {
+  component: Component;
+  path: string
 }
 
-type Context = {
-  component: any;
-  path: string;
-  params: ValidatorParams;
-}
 
-type HasErrorCallback = (value: any, contetx: Context) => boolean | string | (boolean | string)[];
+export type HasErrorCallback = (this: Component, value: any, context: Context) => boolean | string | (boolean | string)[];
 
-class Validator {
+export class Validator {
   constructor(public name: string, private hasErrorCallback: HasErrorCallback) {
 
   }
 
-  hasError(value: any, context: Context): false | string | string[] {
+  public hasError(value: any, context: Context): false | string | string[] {
     let errors = this.hasErrorCallback(value, context);
     if (!Array.isArray(errors)) {
       errors = [errors]
     }
 
     // si aucune erreur -> false
-    errors = errors.filter(e => e !== false);
+    errors = errors.filter(e => e !== false && e !== null && e !== undefined);
     if (errors.length === 0) {
       return false;
     }
@@ -40,7 +36,7 @@ class Validator {
 
   }
 
-  isValid(value: any, context: Context): boolean {
+  public isValid(value: any, context: Context): boolean {
     return this.hasError(value, context) === false;
   }
 

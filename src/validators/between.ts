@@ -3,6 +3,7 @@ import lt from './lt';
 import lte from './lte';
 import gt from './gt';
 import gte from './gte';
+import { Validator } from './validator';
 
 export default function between(min: number, max: number, exclusive = false) {
   return new Validator('between', (value, context) => {

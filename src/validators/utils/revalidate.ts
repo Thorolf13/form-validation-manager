@@ -1,4 +1,5 @@
 import { get } from '../../lodash/index';
+import { Validator } from '../validator';
 
 export default function revalidate(path: string) {
   let lock = false;
