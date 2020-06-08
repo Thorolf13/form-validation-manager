@@ -13,10 +13,13 @@ import withMessage from './validators/utils/with-message';
 import custom from './validators/utils/custom';
 import revalidate from './validators/utils/revalidate';
 import empty from './validators/utils/empty';
+import pick from './validators/utils/pick';
+import length from './validators/utils/length';
 
 import or from './validators/logic/or';
 import xor from './validators/logic/xor';
 import and from './validators/logic/and';
+import andSequence from './validators/logic/and_sequence';
 import not from './validators/logic/not';
 import _if from './validators/logic/if';
 
@@ -34,10 +37,13 @@ export {
   or,
   xor,
   and,
+  andSequence,
   not,
   _if,
   withMessage,
   custom,
   revalidate,
-  empty
+  empty,
+  pick,
+  length
 };

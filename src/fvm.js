@@ -1,3 +1,4 @@
+import { get } from './lodash/index'
 
 export default class Fvm {
   // eslint-disable-next-line space-before-function-paren
