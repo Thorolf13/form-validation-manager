@@ -1,10 +1,11 @@
+import { flattenDeep } from "../commons/flatendeep";
+
 export type Component = any;
 
 export type Context = {
   component: Component;
   path: string
 }
-
 
 export type HasErrorCallback = (this: Component, value: any, context: Context) => boolean | string | (boolean | string)[];
 
@@ -13,7 +14,7 @@ export class Validator {
 
   }
 
-  public hasError(value: any, context: Context): false | string | string[] {
+  public hasError(value: any, context: Context) {
     let errors = this.hasErrorCallback(value, context);
     if (!Array.isArray(errors)) {
       errors = [errors]
@@ -28,16 +29,18 @@ export class Validator {
     // si erreur(s) sans message -> creation d'un message generique
     errors = errors.filter(e => e !== true);
     if (errors.length === 0) {
-      return this.name.toUpperCase() + '_ERROR';
+      return [this.name.toUpperCase() + '_ERROR'];
     }
 
     // sinon, renvoi des messages présents
-    return errors as string[];
+    return flattenDeep(errors) as string[];
 
   }
 
   public isValid(value: any, context: Context): boolean {
     return this.hasError(value, context) === false;
   }
+
+
 
 }

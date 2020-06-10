@@ -31,8 +31,8 @@ describe('custom validator', () => {
   })
 
   it('should sould be KO', () => {
-    expect(custom(() => true).hasError(1, context)).to.equal('CUSTOM_ERROR');
-    expect(custom(() => [false, true]).hasError(1, context)).to.equal('CUSTOM_ERROR');
+    expect(custom(() => true).hasError(1, context)).to.eql(['CUSTOM_ERROR']);
+    expect(custom(() => [false, true]).hasError(1, context)).to.eql(['CUSTOM_ERROR']);
     expect(custom(() => 'TEST').hasError(1, context)).to.eql(['TEST']);
     expect(custom(() => ['TEST1', 'TEST2']).hasError(1, context)).to.eql(['TEST1', 'TEST2']);
     expect(custom(() => ['TEST1', 'TEST2', false, true]).hasError(1, context)).to.eql(['TEST1', 'TEST2']);

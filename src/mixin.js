@@ -1,4 +1,4 @@
-import Fvm from './fvm';
+import Fvm from './fvm/fvm';
 
 export default {
   install (Vue, options) {
@@ -19,7 +19,13 @@ export default {
         if (!options.computed) options.computed = {};
         if (options.computed.$fvm) return;
         options.computed.$fvm = function () {
-          return this._fvm ? this._fvm.validate() : null;
+          if (this._fvm) {
+            if (!this._fvm.validation) {
+              this._fvm.buildValidation();
+            }
+            return this._fvm.validation
+          }
+          return null;
         };
       },
       beforeDestroy () {

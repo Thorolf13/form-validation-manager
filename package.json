@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack --mode production",
-    "test": "mocha -r ts-node/register 'test/**/*.ts'"
+    "test": "mocha -r ts-node/register 'test/**/*.ts'",
+    "test2": "mocha -r ts-node/register 'test/fvm/**/*.ts'"
   },
   "author": "thorolf13@gmail.com",
   "homepage": "https://github.com/Thorolf13/form-validation-manager",

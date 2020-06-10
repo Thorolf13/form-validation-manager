@@ -1,4 +1,4 @@
-import { get } from '../../lodash/index';
+import { get } from '../../commons/lodash';
 import { Validator } from '../validator';
 
 export default function revalidate(path: string) {
@@ -16,7 +16,7 @@ export default function revalidate(path: string) {
 
 
     try {
-      get(context.component._fvm.validations, path)._fvm.forceRevalidate();
+      get(context.component._fvm.validation, path).validate();
       context.component.$forceUpdate();
     } catch (e) { };
     return false;
