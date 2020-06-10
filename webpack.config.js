@@ -26,7 +26,7 @@ module.exports = {
     filename: 'index.js',
     libraryTarget: 'commonjs2',
   },
-  optimization: {
-    minimize: false
-  },
+  // optimization: {
+  //   minimize: false
+  // },
 };

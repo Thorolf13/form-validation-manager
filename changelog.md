@@ -1,3 +1,7 @@
+## 1.3.0
+* migrate fvm to typescript
+* unit test fvm
+
 ## 1.2.10
 * export types
 * fix/update readme
