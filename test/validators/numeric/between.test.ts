@@ -1,5 +1,5 @@
-import { between } from "../../src";
-import { Validator } from "../../src/validators/validator";
+import { between } from "../../../src";
+import { Validator } from "../../../src/validators/validator";
 
 import { describe, it } from "mocha"
 import { expect } from "chai";
@@ -8,7 +8,7 @@ import { expect } from "chai";
 describe('between validator', () => {
   const context = { component: {}, path: '' };
 
-  it('should be instabnce of Validator', () => {
+  it('should be instance of Validator', () => {
     const validator = between(5, 15);
     expect(validator instanceof Validator).to.equal(true)
   })

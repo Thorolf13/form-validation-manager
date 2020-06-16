@@ -9,7 +9,7 @@ describe('_if validator', () => {
 
   const context = { component: {}, path: '' };
 
-  it('should be instabnce of Validator', () => {
+  it('should be instance of Validator', () => {
     const validator = _if(() => true, custom(() => false))
     expect(validator instanceof Validator).to.equal(true)
   })

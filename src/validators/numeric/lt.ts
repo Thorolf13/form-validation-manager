@@ -1,7 +1,7 @@
-import and_sequence from './logic/and_sequence';
-import required from './required';
+import and_sequence from '../logic/and_sequence';
+import required from '../required';
 import numeric from './numeric';
-import { Validator } from './validator';
+import { Validator } from '../validator';
 
 export default function lt(max: number) {
   return new Validator('lt', (value, context) => {

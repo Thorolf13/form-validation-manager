@@ -28,7 +28,10 @@ describe('fvm', () => {
   }
 
   it('should build validation tree', () => {
-    const validation = new Fvm(component, validators, '').validation;
+    const fvm = new Fvm(component, validators, '');
+    fvm.buildValidation();
+    const validation = fvm.validation;
+
     watchersCallback['form.arr'](undefined, component.form.arr)
     if (validation) {
 

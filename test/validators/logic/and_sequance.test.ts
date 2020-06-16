@@ -9,7 +9,7 @@ describe('andSequence validator', () => {
 
   const context = { component: {}, path: '' };
 
-  it('should be instabnce of Validator', () => {
+  it('should be instance of Validator', () => {
     const validator = andSequence(required(), numeric(), eq(0));
     expect(validator instanceof Validator).to.equal(true)
   })

@@ -10,7 +10,7 @@ describe('withMessage validator', () => {
   const validator = withMessage(eq(0), customMessage);
   const context = { component: {}, path: '' };
 
-  it('should be instabnce of Validator', () => {
+  it('should be instance of Validator', () => {
     expect(validator instanceof Validator).to.equal(true)
   })
 

@@ -9,7 +9,7 @@ describe('xor validator', () => {
   const validator = xor(pick('a', eq(1)), pick('b', eq(1)), pick('c', eq(1)));
   const context = { component: {}, path: '' };
 
-  it('should be instabnce of Validator', () => {
+  it('should be instance of Validator', () => {
     expect(validator instanceof Validator).to.equal(true)
   })
 

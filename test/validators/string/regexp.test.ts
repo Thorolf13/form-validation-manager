@@ -1,24 +1,24 @@
-import { or, eq } from "../../../src";
+import { regexp } from "../../../src";
 import { Validator } from "../../../src/validators/validator";
 
 import { describe, it } from "mocha"
 import { expect } from "chai";
 
 
-describe('or validator', () => {
-  const validator = or(eq(0), eq(10));
+describe('regexp validator', () => {
   const context = { component: {}, path: '' };
 
+
   it('should be instance of Validator', () => {
+    const validator = regexp(/ /);
     expect(validator instanceof Validator).to.equal(true)
   })
 
   it('should be OK', () => {
-    expect(validator.hasError(0, context)).to.equal(false)
-    expect(validator.hasError(10, context)).to.equal(false)
-  })
+    expect(regexp(/\w{3}/).hasError('aaa', context)).to.equal(false);
+  });
 
   it('should be KO', () => {
-    expect(validator.isValid(5, context)).to.equal(false)
-  })
+    expect(regexp(/\w{3}/).isValid('aa', context)).to.equal(false);
+  });
 });

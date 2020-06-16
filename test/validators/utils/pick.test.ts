@@ -8,7 +8,7 @@ import { expect } from "chai";
 describe('pick validator', () => {
   const context = { component: {}, path: '' };
 
-  it('should be instabnce of Validator', () => {
+  it('should be instance of Validator', () => {
     const validator = pick('test', custom(() => false));
     expect(validator instanceof Validator).to.equal(true)
   })

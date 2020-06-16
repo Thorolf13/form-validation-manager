@@ -1,5 +1,5 @@
-import { req } from './utils/commons'
-import { Validator } from './validator';
+import { req } from '../utils/commons'
+import { Validator } from '../validator';
 
 export default function numeric() {
   return new Validator('numeric', value => {

@@ -6,7 +6,8 @@
 >> This plugin usage is very similar of vuelidate
 >
 > Why a new plugin ?
->> Instead of vuelidate this one allow fine error report and custom messages
+>> Instead of vuelidate this one allow fine error report and custom messages\
+>> and a better integreation in templates
 
 * Model based
 * Decoupled from templates
@@ -17,7 +18,16 @@
 * Easy to use with custom validators (e.g. Moment.js)
 * Easy errors messages customisation
 
-## Instalation
+> **_Summary_**
+> * [Installation](#installation)
+> * [Basic usage](#basic-usage)
+> * [Validators](#validtors)
+> * [Arrays](#arrays)
+> * [Messages](#messages)
+> * [Custom validation](#custom-validation)
+> * [Integration with vuetify](#integration-with-vuetify)
+
+## Installation
 
 ```shell
 npm install form-validation-manager --save
@@ -25,22 +35,23 @@ npm install form-validation-manager --save
 
 Import the library and use as a Vue plugin to enable the functionality globally on all components containing validation configuration.
 
-```js
+```ts
 import Vue from 'vue'
 import Fvm from 'form-validaiton-manager'
 Vue.use(Fvm)
 ```
 
-Optional : you can customise the validations property name :
-```js
+Optional : you can customise the validations property name :\
+_default = 'validations'_
+```ts
 Vue.use(Fvm, {validationsPropertyName:'myValidationsProperty'})
 ```
 
 ## Basic usage
 
+```ts
 import { and, required, numeric, gte, length } from 'form-validation-manager'
 
-```js
 export default {
   data () {
     return {
@@ -52,7 +63,7 @@ export default {
   },
   validations: {
     form:{
-      name: and(required(), length(gte(3)),
+      name: and(required(), length(gte(3))),
       age: and(required(), numeric(), gte(21))
     }
   },
@@ -65,32 +76,32 @@ export default {
   }
 }
 ```
-a validation oject is generated witrh the same tree as 'validations'
+a validation oject is generated with the same tree as 'validations'
 
-```js
+```ts
 //generated object
 //$fvm
 {
-  $errors:Boolean|String[],
+  $errors:String[],
   $error:Boolean,
   $isValid:Boolean,
   $invalid:Boolean,
   $dirty:Boolean,
   $pristine:Boolean,
   form:{
-    $errors:Boolean|String[],
+    $errors:String[],
     $error:Boolean,
     $isValid:Boolean,
     $invalid:Boolean,
     $dirty:Boolean,
     $pristine:Boolean,
     name:{
-      $errors:Boolean|String[],
+      $errors:String[],
       $error:Boolean,
       [...]
     },
     age:{
-      $errors:Boolean|String[],
+      $errors:String[],
       $error:Boolean,
       [...]
     }
@@ -98,7 +109,7 @@ a validation oject is generated witrh the same tree as 'validations'
 }
 ```
 * _$errors_ : 
-  *  = false or string[]
+  *  string[]
   *  For each 'non-final' node : $errors Array concatenate $errors of sub nodes
 *  _$error_ : node (or sub nodes) has one or more errors
 *  _$isvalid_ : node (or sub nodes) as no errors
@@ -109,19 +120,26 @@ a validation oject is generated witrh the same tree as 'validations'
 
 ## Validtors
 ### values validation
-```js
+```ts
 required()
 eq(value) // equal
+
+
 numeric() // is numeric
 gt(min) // greater than >
 gte(min) // greather than equal >=
-lt(max) // lether than <
-lte(max) //lether than equal <=
+lt(max) // less than <
+lte(max) // less than equal <=
 between(min,max[,exclude])
+
+isString()
+regexp(expr:RegExp)
+includes(str:String)
+isDate(format:String='yyyy-MM-dd') // value must be a string date
 ```
 
 ### logic
-```js
+```ts
 and(...validators) // all validators must be ok
 andSequence(...validators) // all validators must be ok, call next validator only if previous one is OK
 or(...validators) // minimum one validtor must be ok
@@ -131,7 +149,7 @@ not(validator) // validator must be KO
 ```
   
 ### specials
-```js
+```ts
 pick(property, validator) // validate value[property] instead of value itself
 length(validator) // pick length
 withMessage(validator,message) // customise validator message
@@ -144,7 +162,7 @@ revalidate(path) // forcxe another property revalidation if this one change
 
 A special node '$each' allow to validate each elements of an array
 
-```js
+```ts
 export default {
   data () {
     return {
@@ -168,7 +186,7 @@ export default {
 ## Messages
 withMessage wrapper allow to customise error message
 
-```js
+```ts
 export default {
   data () {
     return {
@@ -193,14 +211,14 @@ export default {
   }
 }
 ```
-the property '$errors' will contain defined errors messages if field isnt valid
+the property '$errors' will contain defined errors messages if field isnt valid.
 
 ## Custom validation
 ### component method
-a custom method can be used as validator.
+a custom method can be used as validator.\
 inside this one, 'this' refer to current component
 
-```js
+```ts
 export default {
   data () {
     return {
@@ -226,13 +244,13 @@ export default {
 myValidationMethod must return false if no error and true|string|string[] if one or more errors occured
 
 ### Reusable validator
-You may want to define a validator and use it in ndifferent components
-best wxay is to define it in separate .js file
-```js
+You may want to define a validator and use it in ndifferent components\
+best way is to define it in separate .js file
+```ts
 import { Validator } from 'form-validation-manager';
 
 export default function myValidator(arg1, arg2) {
-  return new Validator('myValidator', (value, context) => {
+  return new Validator('myValidator', (value:any, context:Context) => {
       if( /* test rule 1 KO */){
         return 'message 1'
       }
@@ -247,7 +265,7 @@ export default function myValidator(arg1, arg2) {
 ```
 and use it
 
-```js
+```ts
 import myValidator from './my-validator'
 
 export default {
@@ -267,7 +285,7 @@ export default {
 ```
 
 ## Integration with vuetify
-```js
+```ts
 export default {
   data () {
     return {
