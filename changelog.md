@@ -1,6 +1,5 @@
-## 1.3.1
+## 1.4.0
 * add string validators: isString, regexp, includes, isDate
-* update readme
 
 ## 1.3.0
 * migrate fvm to typescript
