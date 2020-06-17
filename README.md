@@ -1,5 +1,11 @@
 # Form Validation Manager - fvm
 
+![Test](https://img.shields.io/badge/Tests-82/82-green.svg)
+![Coverage](https://img.shields.io/badge/Coverage-85%-green.svg)
+![Dependencies-0](https://img.shields.io/badge/Dependencies-0-green.svg)
+![Typescript](https://img.shields.io/badge/Made%20with-Typescript-1f425f.svg)
+![LGPL3](https://img.shields.io/badge/Licence-LGPL%20V3-aa8800.svg)
+
 ### Simple, lightweight model-based validation for Vue.js
 
 > Inpired by vuelidate
@@ -12,6 +18,7 @@
 * Model based
 * Decoupled from templates
 * Minimalistic library
+* No dependencies
 * Support for collection validations
 * Support for nested models
 * Contextified validators
@@ -121,10 +128,11 @@ a validation oject is generated with the same tree as 'validations'
 ## Validtors
 ### values validation
 ```ts
+// generic validators
 required()
 eq(value) // equal
 
-
+// number validators
 numeric() // is numeric
 gt(min) // greater than >
 gte(min) // greather than equal >=
@@ -132,6 +140,7 @@ lt(max) // less than <
 lte(max) // less than equal <=
 between(min,max[,exclude])
 
+// string validators
 isString()
 regexp(expr:RegExp)
 includes(str:String)
