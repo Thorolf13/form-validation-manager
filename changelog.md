@@ -1,3 +1,6 @@
+## 1.4.1
+* support multiples properties for 'revalidate'
+
 ## 1.4.0
 * add string validators: isString, regexp, includes, isDate
 

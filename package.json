@@ -1,6 +1,6 @@
 {
   "name": "form-validation-manager",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "VueJs validation manager, model based",
   "main": "dist/index.js",
   "scripts": {

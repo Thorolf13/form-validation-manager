@@ -164,7 +164,8 @@ length(validator) // pick length
 withMessage(validator,message) // customise validator message
 empty() // always ok validator
 custom((value, context)=>Boolean|String|String[]) // allow user to create custom validators
-revalidate(path) // forcxe another property revalidation if this one change
+revalidate(...paths) // force properties revalidation if this one change
+// exmple with previous code : revalidate('form.name')
 ```
 
 ## Arrays
