@@ -9,6 +9,7 @@ interface ValidationObject_ {
   $isValid: boolean;
   $dirty: boolean;
   $pristine: boolean;
+  $pending: Boolean;
   validate: () => void;
 };
 interface ValidationObject_recursive { [key: string]: ValidationObject };
@@ -32,7 +33,7 @@ export default class Fvm {
 
     Object.defineProperty(res, 'validate', { configurable: true, get: () => () => { validation.validate(); } })
 
-    const props: ('$errors' | '$error' | '$invalid' | '$valid' | '$isValid' | '$dirty' | '$pristine')[] = ['$errors', '$error', '$invalid', '$valid', '$isValid', '$dirty', '$pristine']
+    const props: ('$errors' | '$error' | '$invalid' | '$valid' | '$isValid' | '$dirty' | '$pristine' | '$pending')[] = ['$errors', '$error', '$invalid', '$valid', '$isValid', '$dirty', '$pristine', '$pending']
     // Object.defineProperty(res, '$dirty', { configurable: true, get: () => validation.$dirty, set: val => validation.$dirty = val })
     for (const prop of props) {
       Object.defineProperty(res, prop, { configurable: true, get: () => validation[prop], set: val => validation[prop] = val })

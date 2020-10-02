@@ -5,6 +5,8 @@ import { flattenDeep } from "../commons/flatendeep";
 import { Watcher } from "./watcher";
 import { AsyncValidator } from "../validators/validator";
 
+import { PromiseState, wrapPromiseState } from './promise'
+
 export interface ValidationNode {
   children?: { [key: string]: ValidationNode };
 
@@ -127,12 +129,20 @@ export class ValidatorWrapper implements ValidationNode {
 
   private watcher: Watcher;
 
-  private _errors: string[] = [];
+  private _errors: (string | Promise<string> & PromiseState<string>)[] = [];
   private _dirty = false;
-  private _pending = false;
 
+  public get $errors() {
+    const errors = this._errors.map(err => {
+      if (err instanceof Promise) {
+        return err.isPending() ? false : err.getResponse();
+      } else {
+        return err;
+      }
+    }).filter(err => !!err) as string[];
 
-  public get $errors() { return this._errors; };
+    return flattenDeep(errors);
+  };
   // public set $errors(err) { this._errors = err; };
 
   public get $error() { return this._errors.length > 0; };
@@ -147,7 +157,14 @@ export class ValidatorWrapper implements ValidationNode {
 
   public get $pristine() { return !this._dirty; };
 
-  public get $pending() { return this._pending; };
+  public get $pending() {
+    for (const err of this._errors) {
+      if (err instanceof Promise && err.isPending()) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   constructor(private validator: Validator | AsyncValidator, private path: string, private componentInstance: Component) {
     this.validate()
@@ -160,19 +177,8 @@ export class ValidatorWrapper implements ValidationNode {
   }
 
   public validate() {
-    if (this.validator instanceof Validator) {
-      const errors = this.validator.hasError(this.getValueByPath(this.path), { component: this.componentInstance, path: this.path })
-      this._errors = errors === false ? [] : flattenDeep([errors]);
-    } else {
-      this._pending = true;
-      this.validator.hasError(this.getValueByPath(this.path), { component: this.componentInstance, path: this.path }).then(errors => {
-        this._errors = errors === false ? [] : flattenDeep([errors]);
-        this._pending = false
-      }).catch((err: any) => {
-        this._pending = false;
-        throw err;
-      })
-    }
+    const errors = this.callValidator();
+    this._errors = errors === false ? [] : flattenDeep([errors]).map(e => e instanceof Promise ? wrapPromiseState(e) : e);
   }
 
   //////////////////////////////////////////////////
@@ -186,5 +192,9 @@ export class ValidatorWrapper implements ValidationNode {
 
   private getValueByPath(path: string) {
     return get(this.componentInstance, path.replace(/^\./, ''));
+  }
+
+  private callValidator() {
+    return this.validator.hasError(this.getValueByPath(this.path), { component: this.componentInstance, path: this.path })
   }
 }
