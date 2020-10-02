@@ -1,3 +1,6 @@
+## 1.4.2
+* change babel config for better browser compatibility
+
 ## 1.4.1
 * support multiples properties for 'revalidate'
 

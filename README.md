@@ -125,7 +125,7 @@ a validation oject is generated with the same tree as 'validations'
 *  _$pristine_ : node (or sub nodes) have not been edited by user
 
 
-## Validtors
+## Validators
 ### values validation
 ```ts
 // generic validators
