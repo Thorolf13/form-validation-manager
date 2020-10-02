@@ -17,6 +17,7 @@ import includes from './validators/string/includes';
 
 import withMessage from './validators/utils/with-message';
 import custom from './validators/utils/custom';
+import async from './validators/utils/async';
 import revalidate from './validators/utils/revalidate';
 import empty from './validators/utils/empty';
 import pick from './validators/utils/pick';
@@ -29,7 +30,7 @@ import andSequence from './validators/logic/and_sequence';
 import not from './validators/logic/not';
 import _if from './validators/logic/if';
 
-import { Validator, Context } from './validators/validator'
+import { Validator, Context, AsyncValidator } from './validators/validator'
 
 
 export default mixin;
@@ -59,11 +60,13 @@ export {
 
   withMessage,
   custom,
+  async,
   revalidate,
   empty,
   pick,
   length,
 
   Validator,
+  AsyncValidator,
   Context
 };

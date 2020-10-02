@@ -1,3 +1,6 @@
+## 1.5.0
+* add async validator
+
 ## 1.4.2
 * change babel config for better browser compatibility
 
