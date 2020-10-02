@@ -32,6 +32,7 @@
 > * [Arrays](#arrays)
 > * [Messages](#messages)
 > * [Custom validation](#custom-validation)
+> * [Async validation](#async-validation)
 > * [Integration with vuetify](#integration-with-vuetify)
 
 ## Installation
@@ -95,6 +96,7 @@ a validation oject is generated with the same tree as 'validations'
   $invalid:Boolean,
   $dirty:Boolean,
   $pristine:Boolean,
+  $pending:Boolean,
   form:{
     $errors:String[],
     $error:Boolean,
@@ -102,6 +104,7 @@ a validation oject is generated with the same tree as 'validations'
     $invalid:Boolean,
     $dirty:Boolean,
     $pristine:Boolean,
+    $pending:Boolean,
     name:{
       $errors:String[],
       $error:Boolean,
@@ -123,6 +126,7 @@ a validation oject is generated with the same tree as 'validations'
 *  _$invalid_ : node (or sub nodes) has one or more errors
 *  _$dirty_ : node (or sub nodes) have been edited by user
 *  _$pristine_ : node (or sub nodes) have not been edited by user
+*  _$pending_ : node (or sub nodes) wait for an async validation result
 
 
 ## Validators
@@ -164,6 +168,7 @@ length(validator) // pick length
 withMessage(validator,message) // customise validator message
 empty() // always ok validator
 custom((value, context)=>Boolean|String|String[]) // allow user to create custom validators
+async((value, context)=>Promise<Boolean|String|String[]>) // allow user to create custom async validators
 revalidate(...paths) // force properties revalidation if this one change
 // exmple with previous code : revalidate('form.name')
 ```
@@ -293,6 +298,31 @@ export default {
   }
 }
 ```
+
+## Async validation
+
+```ts
+export default {
+  data () {
+    return {
+      form:{
+        age: 0
+      }
+    }
+  },
+  validations: {
+    form:{
+      age: async(function(value, context){
+        return Promise(resolve=>{
+          // async stuf
+          resolve(myValidationResult)
+        })
+      })
+    }
+  },
+}
+```
+
 
 ## Integration with vuetify
 ```ts
