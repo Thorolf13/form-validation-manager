@@ -168,7 +168,7 @@ length(validator) // pick length
 withMessage(validator,message) // customise validator message
 empty() // always ok validator
 custom((value, context)=>Boolean|String|String[]) // allow user to create custom validators
-async((value, context)=>Promise<Boolean|String|String[]>) // allow user to create custom async validators
+async((value, context)=>Promise<Boolean|String|String[]>, forceRenderUpdateAuto=true) // allow user to create custom async validators
 revalidate(...paths) // force properties revalidation if this one change
 // exmple with previous code : revalidate('form.name')
 ```

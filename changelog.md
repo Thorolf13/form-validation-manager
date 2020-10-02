@@ -1,3 +1,6 @@
+## 1.5.1
+* fix async error cascade
+
 ## 1.5.0
 * add async validator
 
