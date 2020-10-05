@@ -145,7 +145,7 @@ export class ValidatorWrapper implements ValidationNode {
   };
   // public set $errors(err) { this._errors = err; };
 
-  public get $error() { return this._errors.length > 0; };
+  public get $error() { return this.$errors.length > 0; };
   public get $invalid() { return this.$error; };
 
   public get $valid() { return !this.$error; };

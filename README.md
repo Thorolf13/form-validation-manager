@@ -1,6 +1,6 @@
 # Form Validation Manager - fvm
 
-![Test](https://img.shields.io/badge/Tests-82/82-green.svg)
+![Test](https://img.shields.io/badge/Tests-90/90-green.svg)
 ![Coverage](https://img.shields.io/badge/Coverage-85%-green.svg)
 ![Dependencies-0](https://img.shields.io/badge/Dependencies-0-green.svg)
 ![Typescript](https://img.shields.io/badge/Made%20with-Typescript-1f425f.svg)
@@ -168,7 +168,7 @@ length(validator) // pick length
 withMessage(validator,message) // customise validator message
 empty() // always ok validator
 custom((value, context)=>Boolean|String|String[]) // allow user to create custom validators
-async((value, context)=>Promise<Boolean|String|String[]>, forceRenderUpdateAuto=true) // allow user to create custom async validators
+async((value, context)=>Promise<Boolean|String|String[]>, forceRenderUpdateAuto=true, debounceTime=0) // allow user to create custom async validators
 revalidate(...paths) // force properties revalidation if this one change
 // exmple with previous code : revalidate('form.name')
 ```
@@ -317,12 +317,13 @@ export default {
           // async stuf
           resolve(myValidationResult)
         })
-      })
+      },  forceRenderUpdateAuto, debounceTime)
     }
   },
 }
 ```
-
+* _forceRenderUpdateAuto: boolean_ : optional, default=true, if true call component.$forceUpdate after promise resolution
+* _debounceTime: number_ : in ms, optional, default=0, if > 0 debounce calls
 
 ## Integration with vuetify
 ```ts

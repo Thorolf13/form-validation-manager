@@ -6,7 +6,7 @@ export interface PromiseState<T> {
   getError: () => any | null;
 }
 
-export class ExternalPromise<T>{
+export class ExternalPromise<T> {
   public promise: Promise<T>;
   public resolve!: (value: T) => void;
   public reject!: (error: any) => void;

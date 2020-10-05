@@ -1,3 +1,7 @@
+## 1.5.2
+* add devounce option for async validator
+* fix UT async validation
+
 ## 1.5.1
 * fix async error cascade
 

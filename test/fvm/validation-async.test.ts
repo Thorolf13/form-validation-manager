@@ -26,7 +26,7 @@ function sleep(nb?: number) {
   return new Promise(resolve => { setTimeout(() => resolve(), nb) })
 }
 
-describe('test validation', () => {
+describe('async validation', () => {
 
 
   const component = {
@@ -34,7 +34,8 @@ describe('test validation', () => {
       val1: 0,
       val2: 0
     },
-    $watch: () => { }
+    $watch: () => { },
+    $forceUpdate: () => { }
   }
 
   it('should build validation tree', () => {
@@ -122,6 +123,5 @@ describe('test validation', () => {
     expect(validation.$error).to.equal(true);
     expect(validation.children!.form.children!.val1.$error).to.equal(false);
     expect(validation.children!.form.children!.val2.$error).to.equal(true);
-
   })
 })
