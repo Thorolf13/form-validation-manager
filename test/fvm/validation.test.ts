@@ -2,6 +2,8 @@ import { describe, it } from "mocha"
 import { expect, assert } from "chai";
 import { eq } from "../../src";
 import { ValidationGroup } from "../../src/fvm/validation";
+import { EventEmitter } from "../../src/fvm/event";
+import { EventsList } from "../../src/fvm/types";
 
 
 describe('test validation', () => {
@@ -31,9 +33,10 @@ describe('test validation', () => {
     },
     $watch: () => { }
   }
+  const events = new EventEmitter<EventsList>();
 
   it('should build validation tree', () => {
-    const validation = new ValidationGroup(validators, '', component)
+    const validation = new ValidationGroup(validators, '', component, events)
 
     assert.isDefined(validation.children.form);
     assert.isDefined(validation.children.form.children);
@@ -49,7 +52,7 @@ describe('test validation', () => {
 
 
   it('should cascade children errors to parents', () => {
-    const validation = new ValidationGroup(validators, '', component)
+    const validation = new ValidationGroup(validators, '', component, events)
 
     expect(validation.children!.form.children!.cat1.children!.val1.$errors).to.eql([]);
     expect(validation.children!.form.children!.cat1.children!.val1.$error).to.equal(false);
@@ -117,7 +120,7 @@ describe('test validation', () => {
   })
 
   it('should cascade set as dirty', () => {
-    const validation = new ValidationGroup(validators, '', component)
+    const validation = new ValidationGroup(validators, '', component, events)
 
     expect(validation.children!.form.children!.cat1.children!.val1.$dirty).to.equal(false);
     expect(validation.children!.form.children!.cat1.children!.val1.$pristine).to.equal(true);

@@ -1,5 +1,6 @@
-import { Component, ValidatorsTree } from './types';
+import { Component, ValidatorsTree, EventsList } from './types';
 import { ValidationNode, ValidationGroup } from './validation';
+import { EventEmitter } from './event';
 
 interface ValidationObject_ {
   $errors: string[];
@@ -19,11 +20,12 @@ export default class Fvm {
 
   public validation: ValidationObject | null = null;
   private rootValidationGroup?: ValidationGroup;
+  public events = new EventEmitter<EventsList>();
 
   constructor(private componentInstance: Component, private validators: ValidatorsTree, private rootPath: string) { }
 
   public buildValidation() {
-    this.rootValidationGroup = new ValidationGroup(this.validators, this.rootPath, this.componentInstance)
+    this.rootValidationGroup = new ValidationGroup(this.validators, this.rootPath, this.componentInstance, this.events)
     this.validation = this.buildValidationTree(this.rootValidationGroup);
   }
 

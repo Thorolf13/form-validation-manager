@@ -2,6 +2,8 @@ import { describe, it } from "mocha"
 import { expect, assert } from "chai";
 import { eq } from "../../src";
 import { ValidationGroup } from "../../src/fvm/validation";
+import { EventEmitter } from "../../src/fvm/event";
+import { EventsList } from "../../src/fvm/types";
 
 
 describe('validation $each', () => {
@@ -26,9 +28,10 @@ describe('validation $each', () => {
       watchersCallback[path] = cb;
     }
   }
+  const events = new EventEmitter<EventsList>();
 
   it('should build validation tree', () => {
-    const validation = new ValidationGroup(validators, '', component)
+    const validation = new ValidationGroup(validators, '', component, events)
     watchersCallback['form.arr'](undefined, component.form.arr)
 
     assert.isDefined(validation.children.form);
