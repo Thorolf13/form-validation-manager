@@ -31,6 +31,7 @@
 > * [Validators](#validtors)
 > * [Arrays](#arrays)
 > * [Messages](#messages)
+> * [Events](#events)
 > * [Custom validation](#custom-validation)
 > * [Async validation](#async-validation)
 > * [Integration with vuetify](#integration-with-vuetify)
@@ -97,6 +98,9 @@ a validation oject is generated with the same tree as 'validations'
   $dirty:Boolean,
   $pristine:Boolean,
   $pending:Boolean,
+
+  $events:EventEmitter,
+
   form:{
     $errors:String[],
     $error:Boolean,
@@ -127,6 +131,7 @@ a validation oject is generated with the same tree as 'validations'
 *  _$dirty_ : node (or sub nodes) have been edited by user
 *  _$pristine_ : node (or sub nodes) have not been edited by user
 *  _$pending_ : node (or sub nodes) wait for an async validation result
+*  _$events_ : an event manager, see [Evennts](#events)
 
 
 ## Validators
@@ -228,6 +233,40 @@ export default {
 ```
 the property '$errors' will contain defined errors messages if field isnt valid.
 
+## Events
+
+events a fired when a validaztion is pending or done. An event manager is accessible at
+```ts
+this.$form.$events:EventEmitter;
+```
+
+```ts
+//class EventEmitter
+//type T = 'pending'|'done'
+on(event: T, listener: Listener): () => void // listen for events of type T, return off function
+off(event: T, listener: Listener): void //stop listen
+removeAll(): void //remove all Listeners
+emit(event: T, ...args: any[]): void //trigger event
+once(event: T, listener: Listener): void //listen for only one event of type T
+```
+
+```ts
+export default {
+  data () {
+    return {
+      form:{
+        age: 0
+      }
+    }
+  },
+  created(){
+    this.on('done', (args)=>{
+      // do something
+    })
+  }
+}
+```
+
 ## Custom validation
 ### component method
 a custom method can be used as validator.\
@@ -324,6 +363,31 @@ export default {
 ```
 * _forceRenderUpdateAuto: boolean_ : optional, default=true, if true call component.$forceUpdate after promise resolution
 * _debounceTime: number_ : in ms, optional, default=0, if > 0 debounce calls
+
+Before submiting form, you must wait for $pending == false.\
+Exemples :
+* In template :
+```html
+<form>
+  <!-- -->
+  <button type="submit" :disabled="$form.$pending" @click="submit()">Send</button>
+</form>
+```
+* Use events
+```ts
+submit(){
+  this.loading = true;
+  const stopListening = this.$form.$events.on('done', ()=>{
+    if( this.$form.$pending == false){ //check for pending, multiple asynbc validation can 
+      this.loading = false;
+      stopListening();
+      if( this.$form.$isValid ){
+        //...
+      }
+    }
+  })
+}
+```
 
 ## Integration with vuetify
 ```ts

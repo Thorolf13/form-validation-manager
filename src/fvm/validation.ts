@@ -202,14 +202,14 @@ export class ValidatorWrapper implements ValidationNode {
     if (response instanceof Promise) {
       this.events.emit('pending', { path: this.path, value });
       return response.then(v => {
-        this.events.emit('done', { path: this.path, value, response: v });
+        setTimeout(() => { this.events.emit('done', { path: this.path, value, response: v }); });
         return v;
       }).catch(error => {
-        this.events.emit('done', { path: this.path, value, error });
+        setTimeout(() => { this.events.emit('done', { path: this.path, value, error }); });
         throw error;
       })
     } else {
-      this.events.emit('done', { path: this.path, value, response });
+      setTimeout(() => { this.events.emit('done', { path: this.path, value, response }); });
       return response;
     }
   }

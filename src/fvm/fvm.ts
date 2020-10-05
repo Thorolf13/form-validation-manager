@@ -18,22 +18,28 @@ type ValidationObject = ValidationObject_ & ValidationObject_recursive;
 
 export default class Fvm {
 
-  public validation: ValidationObject | null = null;
+  public validation: ValidationObject & { $events: EventEmitter<EventsList> } | null = null;
   private rootValidationGroup?: ValidationGroup;
-  public events = new EventEmitter<EventsList>();
+  private events: EventEmitter<EventsList>;
 
-  constructor(private componentInstance: Component, private validators: ValidatorsTree, private rootPath: string) { }
+  constructor(private componentInstance: Component, private validators: ValidatorsTree, private rootPath: string) {
+    this.events = new EventEmitter<EventsList>()
+  }
 
   public buildValidation() {
     this.rootValidationGroup = new ValidationGroup(this.validators, this.rootPath, this.componentInstance, this.events)
-    this.validation = this.buildValidationTree(this.rootValidationGroup);
+
+    const validation = this.buildValidationTree(this.rootValidationGroup);
+    Object.defineProperty(validation, '$events', { configurable: true, get: () => this.events });
+
+    this.validation = validation as any;
   }
 
 
   private buildValidationTree(validation: ValidationNode) {
     const res: any = {};
 
-    Object.defineProperty(res, 'validate', { configurable: true, get: () => () => { validation.validate(); } })
+    Object.defineProperty(res, 'validate', { configurable: true, get: () => () => { validation.validate(); } });
 
     const props: ('$errors' | '$error' | '$invalid' | '$valid' | '$isValid' | '$dirty' | '$pristine' | '$pending')[] = ['$errors', '$error', '$invalid', '$valid', '$isValid', '$dirty', '$pristine', '$pending']
     // Object.defineProperty(res, '$dirty', { configurable: true, get: () => validation.$dirty, set: val => validation.$dirty = val })

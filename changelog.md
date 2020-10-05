@@ -1,5 +1,8 @@
+## 1.5.3
+* add events
+
 ## 1.5.2
-* add devounce option for async validator
+* add debounce option for async validator
 * fix UT async validation
 
 ## 1.5.1
