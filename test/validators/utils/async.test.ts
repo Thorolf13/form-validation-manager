@@ -3,7 +3,6 @@ import { AsyncValidator, HasErrorCallbackReturn, Validator } from "../../../src/
 
 import { describe, it } from "mocha"
 import { expect } from "chai";
-import { ExternalPromise } from "../../../src/fvm/promise";
 
 
 
@@ -13,6 +12,7 @@ function sleep(nb?: number) {
 
 describe('async validator', () => {
   const component = { a: 15, $forceUpdate: () => { } };
+  const context = { component, path: '' };
 
   it('should be instance of Validator', () => {
     const validator = async(function () { return new Promise(() => { }) });
