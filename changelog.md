@@ -1,3 +1,6 @@
+## 1.5.4
+* fix readme
+
 ## 1.5.3
 * add events
 

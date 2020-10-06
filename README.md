@@ -1,7 +1,7 @@
 # Form Validation Manager - fvm
 
 ![Test](https://img.shields.io/badge/Tests-90/90-green.svg)
-![Coverage](https://img.shields.io/badge/Coverage-85%-green.svg)
+![Coverage](https://img.shields.io/badge/Coverage-85%25-green.svg)
 ![Dependencies-0](https://img.shields.io/badge/Dependencies-0-green.svg)
 ![Typescript](https://img.shields.io/badge/Made%20with-Typescript-1f425f.svg)
 ![LGPL3](https://img.shields.io/badge/Licence-LGPL%20V3-aa8800.svg)
@@ -352,7 +352,7 @@ export default {
   validations: {
     form:{
       age: async(function(value, context){
-        return Promise(resolve=>{
+        return new Promise(resolve=>{
           // async stuf
           resolve(myValidationResult)
         })
