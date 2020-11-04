@@ -14,6 +14,7 @@ import isString from './validators/string/is-string';
 import isDate from './validators/string/is-date';
 import regexp from './validators/string/regexp';
 import includes from './validators/string/includes';
+import email from './validators/string/email';
 
 import withMessage from './validators/utils/with-message';
 import custom from './validators/utils/custom';
@@ -51,6 +52,7 @@ export {
   isString,
   regexp,
   includes,
+  email,
 
   or,
   xor,

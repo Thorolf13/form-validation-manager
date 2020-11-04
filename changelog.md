@@ -1,3 +1,6 @@
+## 1.7.0
+* add email validator
+
 ## 1.6.0
 * add logic validator 'optional'
 

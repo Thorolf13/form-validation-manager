@@ -1,6 +1,6 @@
 # Form Validation Manager - fvm
 
-![Test](https://img.shields.io/badge/Tests-95/95-green.svg)
+![Test](https://img.shields.io/badge/Tests-98/98-green.svg)
 ![Coverage](https://img.shields.io/badge/Coverage-85%25-green.svg)
 ![Dependencies](https://img.shields.io/badge/Dependencies-0-green.svg)
 ![Typescript](https://img.shields.io/badge/Made%20with-Typescript-blue.svg)
@@ -154,6 +154,7 @@ isString()
 regexp(expr:RegExp)
 includes(str:String)
 isDate(format:String='yyyy-MM-dd') // value must be a string date
+email() //is email address
 ```
 
 ### logic
