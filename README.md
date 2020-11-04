@@ -1,10 +1,10 @@
 # Form Validation Manager - fvm
 
-![Test](https://img.shields.io/badge/Tests-90/90-green.svg)
+![Test](https://img.shields.io/badge/Tests-95/95-green.svg)
 ![Coverage](https://img.shields.io/badge/Coverage-85%25-green.svg)
-![Dependencies-0](https://img.shields.io/badge/Dependencies-0-green.svg)
-![Typescript](https://img.shields.io/badge/Made%20with-Typescript-1f425f.svg)
-![LGPL3](https://img.shields.io/badge/Licence-LGPL%20V3-aa8800.svg)
+![Dependencies](https://img.shields.io/badge/Dependencies-0-green.svg)
+![Typescript](https://img.shields.io/badge/Made%20with-Typescript-blue.svg)
+![LGPL3](https://img.shields.io/badge/Licence-LGPL%20V3-yellow.svg)
 
 ### Simple, lightweight model-based validation for Vue.js
 
@@ -46,7 +46,7 @@ Import the library and use as a Vue plugin to enable the functionality globally 
 
 ```ts
 import Vue from 'vue'
-import Fvm from 'form-validaiton-manager'
+import Fvm from 'form-validation-manager'
 Vue.use(Fvm)
 ```
 
@@ -164,6 +164,7 @@ or(...validators) // minimum one validtor must be ok
 xor(...validators) // only one validator must be ok
 _if(condition:(value,context)=>Boolean, validator) // apply validator only if condition returned value is true
 not(validator) // validator must be KO
+optional(validator) //execute validator only if value != null, undefined or ""
 ```
   
 ### specials

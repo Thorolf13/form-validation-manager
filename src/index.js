@@ -29,6 +29,7 @@ import and from './validators/logic/and';
 import andSequence from './validators/logic/and_sequence';
 import not from './validators/logic/not';
 import _if from './validators/logic/if';
+import optional from './validators/logic/optional';
 
 import { Validator, Context, AsyncValidator } from './validators/validator'
 
@@ -57,6 +58,7 @@ export {
   andSequence,
   not,
   _if,
+  optional,
 
   withMessage,
   custom,

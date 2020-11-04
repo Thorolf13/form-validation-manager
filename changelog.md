@@ -1,3 +1,9 @@
+## 1.6.0
+* add logic validator 'optional'
+
+## 1.5.5
+* fix readme
+
 ## 1.5.4
 * fix readme
 
