@@ -24,6 +24,8 @@ export class Watcher {
   }
 
   watch(key: string, callback: (oldvalue: any, newValue: any) => void, options: Options) {
+    key = key.replace(/\[(\d+)\]/g, (_, a) => '.' + a)
+
     if (this.watchers[key]) {
       this.unwatch(key);
     }

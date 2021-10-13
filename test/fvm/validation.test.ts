@@ -160,6 +160,30 @@ describe('test validation', () => {
     expect(validation.children!.form.$pristine).to.equal(false);
     expect(validation.$dirty).to.equal(true);
     expect(validation.$pristine).to.equal(false);
+
+  })
+
+  it('should cascade dirty to children', () => {
+    const validation = new ValidationGroup(validators, '', component, events)
+    validation.$dirty = true;
+    expect(validation.children!.form.children!.cat1.children!.val1.$dirty).to.equal(true);
+    expect(validation.children!.form.children!.cat1.children!.val2.$dirty).to.equal(true);
+    expect(validation.children!.form.children!.cat1.$dirty).to.equal(true);
+    expect(validation.children!.form.children!.cat2.children!.val3.$dirty).to.equal(true);
+    expect(validation.children!.form.children!.cat2.children!.val4.$dirty).to.equal(true);
+    expect(validation.children!.form.children!.cat2.$dirty).to.equal(true);
+    expect(validation.children!.form.$dirty).to.equal(true);
+    expect(validation.$dirty).to.equal(true);
+
+    validation.$dirty = false;
+    expect(validation.children!.form.children!.cat1.children!.val1.$dirty).to.equal(false);
+    expect(validation.children!.form.children!.cat1.children!.val2.$dirty).to.equal(false);
+    expect(validation.children!.form.children!.cat1.$dirty).to.equal(false);
+    expect(validation.children!.form.children!.cat2.children!.val3.$dirty).to.equal(false);
+    expect(validation.children!.form.children!.cat2.children!.val4.$dirty).to.equal(false);
+    expect(validation.children!.form.children!.cat2.$dirty).to.equal(false);
+    expect(validation.children!.form.$dirty).to.equal(false);
+    expect(validation.$dirty).to.equal(false);
   })
 
 })

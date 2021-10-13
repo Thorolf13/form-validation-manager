@@ -197,13 +197,29 @@ export default {
     form:{
       list:{
         $each : {
-          gt(0)
+          and(
+            gt(0),
+            custom(function(value,context){
+              // custom validation code
+            })
+          )
         }
       }
     }
   }
 }
 ```
+
+>Note : using custom validator under `$each` :   
+>`context.indexes` contain $each loops indexes. Here :
+>```
+>{
+>  0:<possible values : 0,1,2>,
+>  list:n<possible values : 0,1,2>,
+>  length:1
+>}
+>```
+>for more details about custom validator, see [Custom validation](##Custom-validation)
 
 ## Messages
 withMessage wrapper allow to customise error message
@@ -291,13 +307,17 @@ export default {
     }
   },
   methods:{
-    myValidationMethod(){
+    myValidationMethod(value, context){
       // ...
     }
   }
 }
 ```
 myValidationMethod must return false if no error and true|string|string[] if one or more errors occured
+`context` contain properties:
+`component` : current component
+`path` : current property path (`form.age` here)
+optional `indexes` : contain `$each` loops indexes, see [$each](##Arrays) section
 
 ### Reusable validator
 You may want to define a validator and use it in ndifferent components\

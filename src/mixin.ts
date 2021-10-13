@@ -1,18 +1,18 @@
 import Fvm from './fvm/fvm';
 
 export default {
-  install (Vue, options) {
+  install(Vue: any, options: any) {
     const validationsPropertyName = options && options.validationsPropertyName ? options.validationsPropertyName : 'validations';
 
     Vue.mixin({
-      data () {
+      data() {
         const vals = this.$options[validationsPropertyName];
         if (vals) {
           this._fvm = new Fvm(this, vals);
         }
         return {};
       },
-      beforeCreate () {
+      beforeCreate() {
         const options = this.$options;
         const vals = options[validationsPropertyName];
         if (!vals) return;
@@ -28,7 +28,7 @@ export default {
           return null;
         };
       },
-      beforeDestroy () {
+      beforeDestroy() {
         if (this._fvm) {
           this._fvm.destroy();
           this._fvm = null;

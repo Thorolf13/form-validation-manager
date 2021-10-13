@@ -46,6 +46,11 @@ describe('validation $each', () => {
     assert.isDefined(validation.children!.form.children!.arr.children!.$each.children![1]);
     assert.isDefined(validation.children!.form.children!.arr.children!.$each.children![1].children);
     assert.isDefined(validation.children!.form.children!.arr.children!.$each.children![1].children!.val);
+
+    assert.isTrue(validation.children!.form.children!.arr.children!.$each.children![0].children!.val.$error);
+    assert.isFalse(validation.children!.form.children!.arr.children!.$each.children![1].children!.val.$error);
+
+
   })
 
 })

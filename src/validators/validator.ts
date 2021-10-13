@@ -2,9 +2,12 @@ import { flattenDeep } from "../commons/flatendeep";
 
 export type Component = any;
 
+export type Indexes = { length: number; } & Record<string | number, number>
+
 export type Context = {
   component: Component;
-  path: string
+  path: string,
+  indexes?: Indexes
 }
 
 export type HasErrorCallbackReturn = boolean | string | (boolean | string)[]

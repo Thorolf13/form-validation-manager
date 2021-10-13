@@ -22,7 +22,7 @@ export default class Fvm {
   private rootValidationGroup?: ValidationGroup;
   private events: EventEmitter<EventsList>;
 
-  constructor(private componentInstance: Component, private validators: ValidatorsTree, private rootPath: string) {
+  constructor(private componentInstance: Component, private validators: ValidatorsTree, private rootPath?: string) {
     this.events = new EventEmitter<EventsList>()
   }
 

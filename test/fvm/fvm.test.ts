@@ -48,6 +48,9 @@ describe('fvm', () => {
       assert.isDefined(validation.form.arr.$each[0].val);
       assert.isDefined(validation.form.arr.$each[1]);
       assert.isDefined(validation.form.arr.$each[1].val);
+
+      assert.isTrue(validation.form.arr.$each[0].val.$error);
+      assert.isFalse(validation.form.arr.$each[1].val.$error);
     } else {
       assert.fail('validaion is null');
     }

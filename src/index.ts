@@ -35,9 +35,13 @@ import optional from './validators/logic/optional';
 import { Validator, Context, AsyncValidator } from './validators/validator'
 
 
-export default mixin;
+const Fvm = mixin;
+const FormvalidationManager = mixin;
 
 export {
+  Fvm,
+  FormvalidationManager,
+
   required,
   eq,
 

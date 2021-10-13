@@ -1,3 +1,14 @@
+
+## 1.9.1
+* fix types
+  
+## 1.9.0
+* add $each loops indexes in context object for custom validation
+* update readme
+
+## 1.8.2
+* add type definition files
+  
 ## 1.7.0
 * add email validator
 

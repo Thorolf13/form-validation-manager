@@ -3,10 +3,11 @@ import { Component, ValidatorsTree, EventsList } from "./types";
 import { get } from '../commons/lodash';
 import { flattenDeep } from "../commons/flatendeep";
 import { Watcher } from "./watcher";
-import { AsyncValidator } from "../validators/validator";
+import { AsyncValidator, Indexes } from "../validators/validator";
 
 import { PromiseState, wrapPromiseState } from './promise'
 import { EventEmitter } from "./event";
+import { Context } from "mocha";
 
 export interface ValidationNode {
   children?: { [key: string]: ValidationNode };
@@ -64,20 +65,23 @@ export class ValidationGroup implements ValidationNode {
       .reduce((pending, child) => child.$pending || pending, false);
   };
 
-  constructor(private validators: ValidatorsTree, private rootPath: string, private componentInstance: Component, private events: EventEmitter<EventsList>) {
+  constructor(private validators: ValidatorsTree, private rootPath: string | undefined, private componentInstance: Component, private events: EventEmitter<EventsList>) {
     this.watcher = new Watcher(componentInstance);
-
     for (const key in validators) {
       const validator = validators[key];
-      const path = (rootPath ? rootPath + '.' : '') + key;
-      if (validator instanceof Validator || validator instanceof AsyncValidator) {
-        this.setChild(key, new ValidatorWrapper(validator, path, componentInstance, events))
+      if (key === '$each') {
+        if (!rootPath) {
+          throw Error('$each cant be used as root property')
+        }
+        this.watcher.watch(rootPath as string, () => {
+          this.deleteChild('$each');
+          this.setChild('$each', this.each(validator, rootPath as string))
+        }, { deep: true, immediate: true })
       } else {
-        if (key === '$each') {
-          this.watcher.watch(rootPath, () => {
-            this.deleteChild('$each');
-            this.setChild('$each', this.each(validator, rootPath))
-          }, { deep: true, immediate: true })
+        const isIteration = /^\d+$/.test(key)
+        const path = isIteration ? rootPath + '[' + key + ']' : (rootPath ? rootPath + '.' : '') + key;
+        if (validator instanceof Validator || validator instanceof AsyncValidator) {
+          this.setChild(key, new ValidatorWrapper(validator, path, componentInstance, events))
         } else {
           this.setChild(key, new ValidationGroup(validator, path, componentInstance, events))
         }
@@ -85,10 +89,10 @@ export class ValidationGroup implements ValidationNode {
     }
   }
 
-  private each(validators: ValidatorsTree, rootPath: string) {
+  private each(validators: ValidatorsTree | Validator | AsyncValidator, rootPath: string) {
     const arr = this.getValueByPath(rootPath);
 
-    const subValidators: { [i: string]: ValidatorsTree } = {};
+    const subValidators: ValidatorsTree = {};
     for (const index in arr) {
       subValidators[index] = validators;
     }
@@ -195,9 +199,25 @@ export class ValidatorWrapper implements ValidationNode {
     return get(this.componentInstance, path.replace(/^\./, ''));
   }
 
+  private parseIndexes(path: string) {
+    const indexes: Indexes = { length: 0 };
+    const reg = /(\w+)\[(\d+)\]/g;
+
+    let match;
+    while (match = reg.exec(path)) {
+      indexes[indexes.length + ''] = +match[2];
+      indexes[match[1]] = +match[2]
+
+      indexes.length++;
+    }
+
+    return indexes.length ? indexes : undefined;
+  }
+
   private callValidator() {
     const value = this.getValueByPath(this.path);
-    const response = this.validator.hasError(value, { component: this.componentInstance, path: this.path });
+    const indexes = this.parseIndexes(this.path)
+    const response = this.validator.hasError(value, { component: this.componentInstance, path: this.path, indexes });
 
     if (response instanceof Promise) {
       this.events.emit('pending', { path: this.path, value });
