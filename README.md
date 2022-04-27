@@ -134,6 +134,46 @@ a validation oject is generated with the same tree as 'validations'
 *  _$events_ : an event manager, see [Evennts](#events)
 
 
+## Specials nodes
+```ts
+export default {
+  data () {
+    return {
+      form:{
+        list:[
+          {id:1, value:15}
+          {id:2, value:0}
+        ],
+        parent:{
+          child: {
+            property:'value'
+          }
+        }
+      }
+    }
+  },
+  validations: {
+    form:{
+      liste:{
+        $each:{
+          value:gt(0)
+        }
+      },
+      parent:{
+        $self: custom(function()=>{ /* ...*/ }), //validate parent obj
+        child:{
+          property: regexp(/.../) //validate child's property
+        }
+      }
+
+    }
+  }
+}
+```
+
+* _$each_ : loop over elements of an array
+* _$self_ : allow to validate parent and child nodes
+
 ## Validators
 ### values validation
 ```ts
@@ -163,7 +203,7 @@ and(...validators) // all validators must be ok
 andSequence(...validators) // all validators must be ok, call next validator only if previous one is OK
 or(...validators) // minimum one validtor must be ok
 xor(...validators) // only one validator must be ok
-_if(condition:(value,context)=>Boolean, validator) // apply validator only if condition returned value is true
+_if(condition:(value,context)=>Boolean, thenValidator[, elseValidator])// apply thenValidator only if condition function returned value is true else apply elsevalidator if defined
 not(validator) // validator must be KO
 optional(validator) //execute validator only if value != null, undefined or ""
 ```

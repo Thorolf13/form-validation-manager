@@ -1,12 +1,12 @@
 import { describe, it } from "mocha"
 import { expect, assert } from "chai";
-import { eq } from "../../src";
+import { eq, length } from "../../src";
 import Fvm from "../../src/fvm/fvm";
 
 
 
-function sleep(nb?: number) {
-  return new Promise(resolve => { setTimeout(() => resolve(), nb) })
+function sleep (nb?: number) {
+  return new Promise<void>(resolve => { setTimeout(() => resolve(), nb) })
 }
 
 describe('fvm', () => {
@@ -18,6 +18,7 @@ describe('fvm', () => {
     const validators = {
       form: {
         arr: {
+          $self: length(eq(2)),
           $each: {
             val: eq(1)
           }
@@ -39,16 +40,19 @@ describe('fvm', () => {
     const validation = fvm.validation;
 
     watchersCallback['form.arr'](undefined, component.form.arr)
-    if (validation) {
 
+
+    if (validation) {
       assert.isDefined(validation.form);
       assert.isDefined(validation.form.arr);
+      assert.isDefined(validation.form.arr.$self);
       assert.isDefined(validation.form.arr.$each);
       assert.isDefined(validation.form.arr.$each[0]);
       assert.isDefined(validation.form.arr.$each[0].val);
       assert.isDefined(validation.form.arr.$each[1]);
       assert.isDefined(validation.form.arr.$each[1].val);
 
+      assert.isFalse(validation.form.arr.$self.$error);
       assert.isTrue(validation.form.arr.$each[0].val.$error);
       assert.isFalse(validation.form.arr.$each[1].val.$error);
     } else {

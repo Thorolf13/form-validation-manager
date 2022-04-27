@@ -1,5 +1,5 @@
 import { Validator } from '../validator';
-import { andSequence, required } from '../..';
+import { andSequence, required, or } from '../..';
 import isString from './is-string';
 
 const m = '[1-5][0-9]|[0-9]';
@@ -57,11 +57,11 @@ var specials = [
 
 const specialsRegexp = RegExp('[' + specials.join('\\') + ']', 'g')
 
-function escapeRegExp(str: string) {
+function escapeRegExp (str: string) {
   return str.replace(specialsRegexp, "\\$&");
 };
 
-function dateValidation(str: string, format: string) {
+function dateValidation (str: string, format: string) {
   format = escapeRegExp(format);
 
   for (const key in parts) {
@@ -73,7 +73,7 @@ function dateValidation(str: string, format: string) {
 
 
 /**
- * 
+ *
  * @param format date format \
  * \
  * ISO8601 exemple : "yyyy-MM-ddTHH:mm:ss.SSSZ"
@@ -101,14 +101,19 @@ function dateValidation(str: string, format: string) {
  * ZZ : timezone +0000\
  * X : timestamp\
  * x : timestamp millisecond
- * 
+ *
  */
-export default function isDate(format: string = "yyyy-MM-dd") {
+export default function isDate (format: string = "yyyy-MM-dd") {
   return new Validator('isDate', (value, context) => {
     return andSequence(
       required(),
-      isString(),
-      new Validator('isDate', value => !dateValidation(value, format))
+      or(
+        new Validator('isDateIntance', value => !(value instanceof Date)),
+        andSequence(
+          isString(),
+          new Validator('isDateString', value => !dateValidation(value, format))
+        )
+      )
     ).hasError(value, context);
   });
 }

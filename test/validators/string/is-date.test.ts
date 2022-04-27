@@ -20,6 +20,12 @@ describe('is-date validator', () => {
     expect(isDate('dd/MM/yyyy').hasError('31/12/2020', context)).to.equal(false);
     expect(isDate('yyyy-MM-ddTHH:mm:ss.SSSZ').hasError('1900-01-01T16:55:01.000+02:00', context)).to.equal(false);
     expect(isDate('yyyy-MM-ddTHH:mm:ss.SSSZZ').hasError('1900-01-01T16:55:01.000+0200', context)).to.equal(false);
+    expect(isDate().hasError(new Date(), context)).to.equal(false);
+  });
+
+  it('should manage special chars', () => {
+    expect(isDate('[yyyy-MM-dd]$HH:mm:ss$SSSZZ^').hasError('[1900-01-01]$16:55:01$000+0200^', context)).to.equal(false);
+    expect(isDate('[yyyy-MM-dd]$HH:mm:ss$SSSZZ^').isValid('[1900-01-01$[16:55:01$000+0200^', context)).to.equal(false);
   });
 
   it('should be KO', () => {

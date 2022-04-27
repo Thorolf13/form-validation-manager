@@ -14,16 +14,20 @@ describe('_if validator', () => {
     expect(validator instanceof Validator).to.equal(true)
   })
 
-  it('should call validator if condition is true', () => {
-    const validator = _if(() => true, custom(() => 'ERR_MESSAGE'))
+  it('should call thenValidator if condition is true', () => {
+    const validator = _if(() => true, custom(() => 'ERR_MESSAGE'), custom(() => assert.fail('should never be called')))
     expect(validator.hasError(1, context)).to.eql(['ERR_MESSAGE']);
   })
 
-  it('should not call validator if condition is false', () => {
+  it('should not call thenValidator if condition is false', () => {
     const validator = _if(() => false, custom(() => {
       assert.fail('should never be called')
-      return 'ERR_MESSAGE'
     }))
     expect(validator.hasError(1, context)).to.equal(false);
+  })
+
+  it('should call elseValidator if condition is false and elseValidator defined', () => {
+    const validator = _if(() => false, custom(() => assert.fail('should never be called')), custom(() => 'ERR_MESSAGE2'))
+    expect(validator.hasError(1, context)).to.eql(['ERR_MESSAGE2']);
   })
 });

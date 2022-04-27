@@ -18,6 +18,7 @@ describe('required validator', () => {
     expect(validator.hasError(0, context)).to.equal(false);
     expect(validator.hasError([1], context)).to.equal(false);
     expect(validator.hasError({ a: 1 }, context)).to.equal(false);
+    expect(validator.hasError(new Date(), context)).to.equal(false);
   });
 
   it('should be KO', () => {

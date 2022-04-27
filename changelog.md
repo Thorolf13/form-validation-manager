@@ -1,4 +1,22 @@
 
+## 1.11.3
+* fix required validator for object (bug when used on file input)
+
+## 1.11.2
+* fix types
+
+## 1.11.0
+* add optional elseValidator in _if validator
+
+## 1.10.3
+* fix date validation (isDate and required validators)
+
+## 1.10.2
+* fix build and documentation
+
+## 1.10.0
+* add $self support
+
 ## 1.9.1
 * fix types
   

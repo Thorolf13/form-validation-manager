@@ -13,16 +13,16 @@ export const FormvalidationManager: PluginObject<PluginOptions>;
 export declare class Validator {
   name: string;
   private hasErrorCallback;
-  constructor(name: string, hasErrorCallback: HasErrorCallback);
-  hasError(value: any, context: Context): false | string[];
-  isValid(value: any, context: Context): boolean;
+  constructor (name: string, hasErrorCallback: HasErrorCallback);
+  hasError (value: any, context: Context): false | string[];
+  isValid (value: any, context: Context): boolean;
 }
 export declare class AsyncValidator {
   name: string;
   private hasErrorCallback;
-  constructor(name: string, hasErrorCallback: HasErrorAsyncCallback);
-  hasError(value: any, context: Context): Promise<false | string[]>;
-  isValid(value: any, context: Context): Promise<boolean>;
+  constructor (name: string, hasErrorCallback: HasErrorAsyncCallback);
+  hasError (value: any, context: Context): Promise<false | string[]>;
+  isValid (value: any, context: Context): Promise<boolean>;
 }
 export type Component = any;
 export type Indexes = { length: number; } & Record<string | number, number>
@@ -36,23 +36,23 @@ export type HasErrorCallbackReturn = boolean | string | (boolean | string)[];
 export type HasErrorCallback = (this: Component, value: any, context: Context) => HasErrorCallbackReturn;
 export type HasErrorAsyncCallback = (this: Component, value: any, context: Context) => Promise<HasErrorCallbackReturn>;
 
-export function eq(val: any, strict?: boolean): Validator;
-export function required(): Validator;
-export function and(...validators: Validator[]): Validator;
-export function and_sequence(...validators: Validator[]): Validator;
-export function _if(condition: (value: any, context: Context) => boolean, validator: Validator): Validator;
-export function not(validator: Validator): Validator;
-export function optional(validator: Validator): Validator;
-export function or(...validators: Validator[]): Validator;
-export function xor(...validators: Validator[]): Validator;
-export function between(min: number, max: number, exclusive?: boolean): Validator;
-export function gt(min: number): Validator;
-export function gte(min: number): Validator;
-export function lt(max: number): Validator;
-export function lte(max: number): Validator;
-export function numeric(): Validator;
-export function email(): Validator;
-export function includes(str: string): Validator;
+export function eq (val: any, strict?: boolean): Validator;
+export function required (): Validator;
+export function and (...validators: Validator[]): Validator;
+export function and_sequence (...validators: Validator[]): Validator;
+export function _if (condition: (this: Component, value: any, context: Context) => boolean, thenValidator: Validator, elseValidator?: Validator): Validator;
+export function not (validator: Validator): Validator;
+export function optional (validator: Validator): Validator;
+export function or (...validators: Validator[]): Validator;
+export function xor (...validators: Validator[]): Validator;
+export function between (min: number, max: number, exclusive?: boolean): Validator;
+export function gt (min: number): Validator;
+export function gte (min: number): Validator;
+export function lt (max: number): Validator;
+export function lte (max: number): Validator;
+export function numeric (): Validator;
+export function email (): Validator;
+export function includes (str: string): Validator;
 
 /**
  * check if value is a valid date string
@@ -86,16 +86,16 @@ export function includes(str: string): Validator;
  * x : timestamp millisecond
  *
  */
-export function isDate(format?: string): Validator;
-export function isString(): Validator;
-export function regexp(regexp: RegExp): Validator;
-export function async(callback: HasErrorAsyncCallback, forceRenderUpdateAuto?: boolean, debounceTime?: number): AsyncValidator;
-export function custom(callback: HasErrorCallback): Validator;
-export function empty(): Validator;
-export function length(validator: Validator): Validator;
-export function pick(property: string, validator: Validator): Validator;
-export function revalidate(...paths: string[]): Validator;
-export function withMessage(validator: Validator, message: string): Validator;
+export function isDate (format?: string): Validator;
+export function isString (): Validator;
+export function regexp (regexp: RegExp): Validator;
+export function async (callback: HasErrorAsyncCallback, forceRenderUpdateAuto?: boolean, debounceTime?: number): AsyncValidator;
+export function custom (callback: HasErrorCallback): Validator;
+export function empty (): Validator;
+export function length (validator: Validator): Validator;
+export function pick (property: string, validator: Validator): Validator;
+export function revalidate (...paths: string[]): Validator;
+export function withMessage (validator: Validator, message: string): Validator;
 
 
 //events
@@ -103,12 +103,12 @@ export function withMessage(validator: Validator, message: string): Validator;
 type Listener = (...args: any[]) => void;
 declare class EventEmitter<T extends string> {
   private readonly events;
-  constructor();
-  on(event: T, listener: Listener): () => void;
-  off(event: T, listener: Listener): void;
-  removeAll(): void;
-  emit(event: T, ...args: any[]): void;
-  once(event: T, listener: Listener): void;
+  constructor ();
+  on (event: T, listener: Listener): () => void;
+  off (event: T, listener: Listener): void;
+  removeAll (): void;
+  emit (event: T, ...args: any[]): void;
+  once (event: T, listener: Listener): void;
 }
 type EventsList = 'pending' | 'done';
 

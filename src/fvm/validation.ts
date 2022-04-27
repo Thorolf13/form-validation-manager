@@ -29,7 +29,7 @@ export class ValidationGroup implements ValidationNode {
   private watcher: Watcher;
   children: { [key: string]: ValidationNode } = {};
 
-  public get $errors() {
+  public get $errors () {
     return flattenDeep(
       Object.keys(this.children)
         .map(key => this.children[key])
@@ -38,34 +38,34 @@ export class ValidationGroup implements ValidationNode {
   };
   // public set $errors(err) { this._errors = err; };
 
-  public get $error() { return this.$errors.length > 0 };
-  public get $invalid() { return this.$error; };
+  public get $error () { return this.$errors.length > 0 };
+  public get $invalid () { return this.$error; };
 
-  public get $valid() { return !this.$error; };
-  public get $isValid() { return !this.$error; };
+  public get $valid () { return !this.$error; };
+  public get $isValid () { return !this.$error; };
 
 
-  public get $dirty() {
+  public get $dirty () {
     return Object.keys(this.children)
       .map(key => this.children[key])
       .map(child => child.$dirty)
       .reduce((item, result) => item || result, false);
   };
-  public set $dirty(val) {
+  public set $dirty (val) {
     Object.keys(this.children)
       .map(key => this.children[key])
       .forEach(child => child.$dirty = val);
   };
 
-  public get $pristine() { return !this.$dirty; };
+  public get $pristine () { return !this.$dirty; };
 
-  public get $pending() {
+  public get $pending () {
     return Object.keys(this.children)
       .map(key => this.children[key])
       .reduce((pending, child) => child.$pending || pending, false);
   };
 
-  constructor(private validators: ValidatorsTree, private rootPath: string | undefined, private componentInstance: Component, private events: EventEmitter<EventsList>) {
+  constructor (private validators: ValidatorsTree, private rootPath: string | undefined, private componentInstance: Component, private events: EventEmitter<EventsList>) {
     this.watcher = new Watcher(componentInstance);
     for (const key in validators) {
       const validator = validators[key];
@@ -78,18 +78,31 @@ export class ValidationGroup implements ValidationNode {
           this.setChild('$each', this.each(validator, rootPath as string))
         }, { deep: true, immediate: true })
       } else {
-        const isIteration = /^\d+$/.test(key)
-        const path = isIteration ? rootPath + '[' + key + ']' : (rootPath ? rootPath + '.' : '') + key;
-        if (validator instanceof Validator || validator instanceof AsyncValidator) {
-          this.setChild(key, new ValidatorWrapper(validator, path, componentInstance, events))
+        if (key === '$self') {
+          if (!(validator instanceof Validator || validator instanceof AsyncValidator)) {
+            throw new Error('$self muste be a validator')
+          }
+          if (rootPath === undefined) {
+            throw new Error('$self cant be used as root property')
+          }
+          this.setChild('$self', new ValidatorWrapper(validator, rootPath as string, componentInstance, events))
         } else {
-          this.setChild(key, new ValidationGroup(validator, path, componentInstance, events))
+
+
+
+          const isIteration = /^\d+$/.test(key)
+          const path = isIteration ? rootPath + '[' + key + ']' : (rootPath ? rootPath + '.' : '') + key;
+          if (validator instanceof Validator || validator instanceof AsyncValidator) {
+            this.setChild(key, new ValidatorWrapper(validator, path, componentInstance, events))
+          } else {
+            this.setChild(key, new ValidationGroup(validator, path, componentInstance, events))
+          }
         }
       }
     }
   }
 
-  private each(validators: ValidatorsTree | Validator | AsyncValidator, rootPath: string) {
+  private each (validators: ValidatorsTree | Validator | AsyncValidator, rootPath: string) {
     const arr = this.getValueByPath(rootPath);
 
     const subValidators: ValidatorsTree = {};
@@ -100,18 +113,18 @@ export class ValidationGroup implements ValidationNode {
     return new ValidationGroup(subValidators, rootPath, this.componentInstance, this.events);
   }
 
-  setChild(key: string, validation: ValidationNode) {
+  setChild (key: string, validation: ValidationNode) {
     this.children[key] = validation;
   }
 
-  deleteChild(key: string) {
+  deleteChild (key: string) {
     if (this.children[key]) {
       this.children[key].destroy();
       delete this.children[key];
     }
   }
 
-  destroy() {
+  destroy () {
     Object.keys(this.children)
       .map(key => this.children[key])
       .forEach(child => child.destroy());
@@ -119,13 +132,13 @@ export class ValidationGroup implements ValidationNode {
     this.watcher.unwatchAll();
   }
 
-  validate() {
+  validate () {
     Object.keys(this.children)
       .map(key => this.children[key])
       .forEach(child => child.validate());
   }
 
-  private getValueByPath(path: string) {
+  private getValueByPath (path: string) {
     return get(this.componentInstance, path.replace(/^\./, ''));
   }
 }
@@ -137,7 +150,7 @@ export class ValidatorWrapper implements ValidationNode {
   private _errors: (string | Promise<string> & PromiseState<string>)[] = [];
   private _dirty = false;
 
-  public get $errors() {
+  public get $errors () {
     const errors = this._errors.map(err => {
       if (err instanceof Promise) {
         return err.isPending() ? false : err.getResponse();
@@ -150,19 +163,19 @@ export class ValidatorWrapper implements ValidationNode {
   };
   // public set $errors(err) { this._errors = err; };
 
-  public get $error() { return this.$errors.length > 0; };
-  public get $invalid() { return this.$error; };
+  public get $error () { return this.$errors.length > 0; };
+  public get $invalid () { return this.$error; };
 
-  public get $valid() { return !this.$error; };
-  public get $isValid() { return !this.$error; };
+  public get $valid () { return !this.$error; };
+  public get $isValid () { return !this.$error; };
 
 
-  public get $dirty() { return this._dirty; };
-  public set $dirty(val) { this._dirty = val; };
+  public get $dirty () { return this._dirty; };
+  public set $dirty (val) { this._dirty = val; };
 
-  public get $pristine() { return !this._dirty; };
+  public get $pristine () { return !this._dirty; };
 
-  public get $pending() {
+  public get $pending () {
     for (const err of this._errors) {
       if (err instanceof Promise && err.isPending()) {
         return true;
@@ -171,35 +184,35 @@ export class ValidatorWrapper implements ValidationNode {
     return false;
   };
 
-  constructor(private validator: Validator | AsyncValidator, private path: string, private componentInstance: Component, private events: EventEmitter<EventsList>) {
+  constructor (private validator: Validator | AsyncValidator, private path: string, private componentInstance: Component, private events: EventEmitter<EventsList>) {
     this.validate()
     this.watcher = new Watcher(componentInstance);
     this.watcher.watch(this.path, (...args) => this.onChange(...args), { deep: true })
   }
 
-  public destroy() {
+  public destroy () {
     this.watcher.unwatchAll();
   }
 
-  public validate() {
+  public validate () {
     const errors = this.callValidator();
     this._errors = errors === false ? [] : flattenDeep([errors]).map(e => e instanceof Promise ? wrapPromiseState(e) : e);
   }
 
   //////////////////////////////////////////////////
 
-  private onChange(oldVal: any, newVal: any) {
+  private onChange (oldVal: any, newVal: any) {
     if (oldVal !== newVal) {
       this._dirty = true;
     }
     this.validate();
   }
 
-  private getValueByPath(path: string) {
+  private getValueByPath (path: string) {
     return get(this.componentInstance, path.replace(/^\./, ''));
   }
 
-  private parseIndexes(path: string) {
+  private parseIndexes (path: string) {
     const indexes: Indexes = { length: 0 };
     const reg = /(\w+)\[(\d+)\]/g;
 
@@ -214,7 +227,7 @@ export class ValidatorWrapper implements ValidationNode {
     return indexes.length ? indexes : undefined;
   }
 
-  private callValidator() {
+  private callValidator () {
     const value = this.getValueByPath(this.path);
     const indexes = this.parseIndexes(this.path)
     const response = this.validator.hasError(value, { component: this.componentInstance, path: this.path, indexes });
