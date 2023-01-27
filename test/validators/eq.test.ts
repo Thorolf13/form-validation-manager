@@ -1,7 +1,7 @@
 import { eq } from "../../src";
 import { Validator } from "../../src/validators/validator";
 
-import { describe, it } from "mocha"
+import { describe, it } from "mocha";
 import { expect } from "chai";
 
 
@@ -10,8 +10,8 @@ describe('eq validator', () => {
 
   it('should be instance of Validator', () => {
     const validator = eq(15);
-    expect(validator instanceof Validator).to.equal(true)
-  })
+    expect(validator instanceof Validator).to.equal(true);
+  });
 
   it('should be OK', () => {
     expect(eq(null).hasError(null, context)).to.equal(false);
@@ -34,9 +34,9 @@ describe('eq validator', () => {
   });
 
   it('should be KO', () => {
-    expect(eq(null).isValid(undefined, context)).to.equal(false);
-    expect(eq(undefined).isValid(null, context)).to.equal(false);
-    expect(eq(1).isValid('1', context)).to.equal(false);
-    expect(eq('a').isValid(1, context)).to.equal(false);
+    expect(eq(null).hasError(undefined, context)).to.not.equal(false);
+    expect(eq(undefined).hasError(null, context)).to.not.equal(false);
+    expect(eq(1).hasError('1', context)).to.not.equal(false);
+    expect(eq('a').hasError(1, context)).to.not.equal(false);
   });
 });
