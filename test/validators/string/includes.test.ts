@@ -21,8 +21,8 @@ describe('includes validator', () => {
   });
 
   it('should be KO', () => {
-    expect(includes('e').isValid('aaabbbcccddd', context)).to.equal(false);
-    expect(includes(' ').isValid('aaabbbcccddd', context)).to.equal(false);
-    expect(includes(' ').isValid('', context)).to.equal(false);
+    expect(includes('e').hasError('aaabbbcccddd', context)).to.not.equal(false);
+    expect(includes(' ').hasError('aaabbbcccddd', context)).to.not.equal(false);
+    expect(includes(' ').hasError('', context)).to.not.equal(false);
   });
 });

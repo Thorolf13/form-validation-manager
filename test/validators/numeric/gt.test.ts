@@ -20,9 +20,9 @@ describe('gt validator', () => {
   });
 
   it('should be KO', () => {
-    expect(validator.isValid(15, context)).to.equal(false);
-    expect(validator.isValid(-Infinity, context)).to.equal(false);
-    expect(validator.isValid('a', context)).to.equal(false);
-    expect(validator.isValid(null, context)).to.equal(false);
+    expect(validator.hasError(15, context)).to.not.equal(false);
+    expect(validator.hasError(-Infinity, context)).to.not.equal(false);
+    expect(validator.hasError('a', context)).to.not.equal(false);
+    expect(validator.hasError(null, context)).to.not.equal(false);
   });
 });

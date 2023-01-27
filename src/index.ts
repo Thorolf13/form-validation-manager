@@ -31,7 +31,7 @@ import not from './validators/logic/not';
 import _if from './validators/logic/if';
 import optional from './validators/logic/optional';
 
-import { Validator, Context, AsyncValidator } from './validators/validator'
+import { Validator, Context } from './validators/validator'
 
 import mixin from './vue-integration/mixin';
 import { useFvm } from './vue-integration/use';
@@ -78,6 +78,5 @@ export {
   length,
 
   Validator,
-  AsyncValidator,
   Context
 };

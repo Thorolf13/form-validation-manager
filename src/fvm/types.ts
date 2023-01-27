@@ -1,7 +1,7 @@
-import { AsyncValidator, Validator } from "../validators/validator";
+import { Validator } from "../validators/validator";
 
 export type ValidatorsTree = {
-  [x: string]: Validator | AsyncValidator | ValidatorsTree;
+  [x: string]: Validator | ValidatorsTree;
 }
 
 export type EventsList = 'pending' | 'done' | 'error';

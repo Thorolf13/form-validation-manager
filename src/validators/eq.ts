@@ -1,7 +1,7 @@
 import { Validator } from './validator';
 
 export default function eq (val: any, strict = true) {
-  return new Validator('eq', value => {
+  return new Validator('eq', (value, context) => {
     if (strict) {
       return value !== val;
     } else {

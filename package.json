@@ -8,6 +8,7 @@
     "build": "webpack --mode production",
     "test": "nyc mocha -r ts-node/register 'test/**/*.ts'",
     "test-validators": "mocha -r ts-node/register 'test/validators/**/*.ts'",
+    "test-validation": "mocha -r ts-node/register 'test/validation/**/*.ts'",
     "test-fvm": "mocha -r ts-node/register 'test/fvm/**/*.ts'",
     "test-vue3": "vue-cli-service test:unit test-integration/vue3/",
     "test-vue2": "npm run build && cd test-integration/vue2 && npm run test"

@@ -41,7 +41,7 @@ describe('validation - options API', () => {
 
   it('should have errors on init', async () => {
     const Component = {
-      template: '<div>{{$fvm.$errors}}</div>',
+      template: '<div>{{$fvm}}</div>',
       data: () => ({
         form: {
           val1: 5,
@@ -69,7 +69,7 @@ describe('validation - options API', () => {
 
   it('should have errors after update', async () => {
     const Component = {
-      template: '<div><input v-model="val1"/><span id="errors">{{$fvm.$errors}}</span></div>',
+      template: '<div><input v-model="val1"/><span id="errors">{{$fvm}}</span></div>',
       data: () => ({
         val1: 5,
         val2: 5

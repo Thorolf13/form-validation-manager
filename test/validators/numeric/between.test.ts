@@ -29,19 +29,19 @@ describe('between validator', () => {
 
   it('should be KO', () => {
     const validator = between(5, 15);
-    expect(validator.isValid(4.99999, context)).to.equal(false);
-    expect(validator.isValid(15.000001, context)).to.equal(false);
-    expect(validator.isValid(-Infinity, context)).to.equal(false);
-    expect(validator.isValid('a', context)).to.equal(false);
-    expect(validator.isValid(null, context)).to.equal(false);
+    expect(validator.hasError(4.99999, context)).to.not.equal(false);
+    expect(validator.hasError(15.000001, context)).to.not.equal(false);
+    expect(validator.hasError(-Infinity, context)).to.not.equal(false);
+    expect(validator.hasError('a', context)).to.not.equal(false);
+    expect(validator.hasError(null, context)).to.not.equal(false);
   });
 
   it('should be KO, exclusive', () => {
     const validator = between(5, 15, true);
-    expect(validator.isValid(5, context)).to.equal(false);
-    expect(validator.isValid(15, context)).to.equal(false);
-    expect(validator.isValid(-Infinity, context)).to.equal(false);
-    expect(validator.isValid('a', context)).to.equal(false);
-    expect(validator.isValid(null, context)).to.equal(false);
+    expect(validator.hasError(5, context)).to.not.equal(false);
+    expect(validator.hasError(15, context)).to.not.equal(false);
+    expect(validator.hasError(-Infinity, context)).to.not.equal(false);
+    expect(validator.hasError('a', context)).to.not.equal(false);
+    expect(validator.hasError(null, context)).to.not.equal(false);
   });
 });

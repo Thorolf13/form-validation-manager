@@ -1,16 +1,15 @@
 import { ExternalPromise } from '../../commons/promise';
-import { Validator, HasErrorAsyncCallback, HasErrorCallbackReturn } from '../validator';
+import { Validator, HasErrorCallbackReturn, Component, Context } from '../validator';
 
 
-export default function async (callback: HasErrorAsyncCallback, debounceTime = 0) {
+export default function async (callback: ((this: Component, value: any, context: Context) => Promise<boolean | string | (boolean | string)[]>), debounceTime = 0) {
   let timeout: any;
 
   return new Validator('async', (value, context) => {
-    const $self = this;
     if (debounceTime > 0) {
-      const promise = new ExternalPromise<HasErrorCallbackReturn>();
+      const promise = new ExternalPromise<boolean | string | (boolean | string)[]>();
 
-      const func = () => callback.call($self, value, context)
+      const func = () => callback.call(context.component, value, context)
         .then(promise.resolve)
         .catch(promise.catch);
 
@@ -24,7 +23,7 @@ export default function async (callback: HasErrorAsyncCallback, debounceTime = 0
 
       return promise.promise;
     } else {
-      return callback.call($self, value, context);
+      return callback.call(context.component, value, context);
     }
 
   });

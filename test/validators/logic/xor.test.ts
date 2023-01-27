@@ -20,9 +20,9 @@ describe('xor validator', () => {
   })
 
   it('should be KO', () => {
-    expect(validator.isValid({ a: 1, b: 1, c: 1 }, context)).to.equal(false);
-    expect(validator.isValid({ a: 1, b: 1, c: 2 }, context)).to.equal(false);
-    expect(validator.isValid({ a: 1, b: 2, c: 1 }, context)).to.equal(false);
-    expect(validator.isValid({ a: 2, b: 1, c: 1 }, context)).to.equal(false);
+    expect(validator.hasError({ a: 1, b: 1, c: 1 }, context)).to.not.equal(false);
+    expect(validator.hasError({ a: 1, b: 1, c: 2 }, context)).to.not.equal(false);
+    expect(validator.hasError({ a: 1, b: 2, c: 1 }, context)).to.not.equal(false);
+    expect(validator.hasError({ a: 2, b: 1, c: 1 }, context)).to.not.equal(false);
   })
 });

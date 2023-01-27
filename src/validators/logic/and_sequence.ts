@@ -1,12 +1,13 @@
 import { Validator } from '../validator';
 
-export default function and_sequence(...validators: Validator[]) {
+export default function and_sequence (...validators: Validator[]) {
   return new Validator('and_sequence', (value, context) => {
 
     for (let i in validators) {
       const validator = validators[i];
 
       const errors = validator.hasError(value, context);
+
       if (errors !== false) {
         return errors;
       }

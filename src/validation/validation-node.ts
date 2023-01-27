@@ -1,36 +1,65 @@
-import { Context, Validator } from "../validators/validator";
+import { Context, Indexes, Validator } from "../validators/validator";
 import { ValidatorTree } from "../validators/validator-tree";
 import { State } from "./state";
 import { isPromise } from "../commons/promise";
 import { computed, ComputedRef } from "vue-demi";
 
 export class ValidationNode<T extends ValidatorTree<T>> {
-  public children?: { [K in keyof T]: ValidationNode<T[K]> };
+  public children: { [K in keyof T]: K extends '$each' ? ValidationNode<T[K][]> : ValidationNode<T[K]> };
   public validator?: Validator;
   public isFinalNode = false;
 
 
-  constructor(public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
+  constructor (public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
+    this.path = path = path.replace(/^\./, '');
     state.registerValidationNode(path, this);
 
-    if (validators instanceof Validator) {
-      this.validator = validators as any;
+    this.children = {} as any;
+    this.init();
+
+    this.validate();
+  }
+
+  private init () {
+    if (this.validators instanceof Validator) {
+      this.validator = this.validators as any;
       this.isFinalNode = true;
+
+      this.state.watch(this.getValuePath(), () => { this.setDirty(true); this.validate(); }, { deep: true });
     } else {
-      const children: any = {};
-      for (const key in validators) {
-        // todo $each, $self
-        const validator = validators[key] as ValidatorTree<any>;
-        children[key] = new ValidationNode(path + '.' + key, this, validator, state);
+      for (const key in this.validators) {
+        if (key === '$each') {
+          this.state.watch(this.getValuePath(), () => {
+            try { (this.children as any)[key].destroy(); } catch (e) { }
+            const node: ValidationNode<any> = this.each(this.validators[key] as any);
+            (this.children as any)[key] = node as any;
+          }, { deep: true, immediate: true })
+        } else {
+          const validator = this.validators[key] as ValidatorTree<any>;
+          const childPath = /\$each$/.test(this.path) ? this.path + '[' + key + ']' : this.path + '.' + key;
+          (this.children as any)[key] = new ValidationNode(childPath, this, validator, this.state);
+        }
       }
-      this.children = children as any;
     }
+  }
+
+  private each (validators: Validator | ValidatorTree<any>): ValidationNode<any> {
+    const subValidators: any = {};
+
+    this.getValue().value.forEach((item: any, index: number) => {
+      subValidators[index] = validators;
+    })
+
+    return new ValidationNode(this.path + '.$each', this, subValidators, this.state);
+  }
+
+  private getValuePath () {
+    return this.path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
   }
 
   private getValue (): ComputedRef<any> {
     return computed(() => {
-
-      return null;
+      return this.state.getPropertyValue(this.getValuePath());
     });
   }
 
@@ -49,15 +78,15 @@ export class ValidationNode<T extends ValidatorTree<T>> {
     return indexes.length ? indexes : undefined;
   }
 
-  private buildContext (): Context {
-    const value = this.getValueByPath(this.path);
+  private getContext (): Context {
+    const value = this.getValue().value;
     const indexes = this.parseIndexes(this.path);
-    return { path: this.path, value, indexes, parent: this.parent?.getContext() };
+    return { component: this.state.componentInstance, path: this.path, value, indexes, parent: this.parent?.getContext() };
   }
 
   validate () {
     if (this.validator) {
-      const validation = this.validator.hasError(this.getValue(), this.buildContext());
+      const validation = this.validator.hasError(this.getValue().value, this.getContext());
 
       if (isPromise(validation)) {
         this.state.setErrors(this.path, '__pending__');
@@ -73,7 +102,7 @@ export class ValidationNode<T extends ValidatorTree<T>> {
     } else {
       for (const key in this.children) {
         const child = this.children[key];
-        child.validate(value[key], context);
+        child.validate();
       }
     }
   }
@@ -123,6 +152,35 @@ export class ValidationNode<T extends ValidatorTree<T>> {
         return false;
       });
 
+    }
+  }
+
+  getDirtyComputed () {
+    if (this.isFinalNode) {
+      return computed(() => {
+        return this.state.isDirty(this.path);
+      });
+    } else {
+      return computed(() => {
+        for (const key in this.children) {
+          const child = this.children[key];
+          if (child.getDirtyComputed().value) {
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+  }
+
+  setDirty (value: boolean) {
+    if (this.isFinalNode) {
+      this.state.setDirty(this.path, value);
+    } else {
+      for (const key in this.children) {
+        const child = this.children[key];
+        child.setDirty(value);
+      }
     }
   }
 

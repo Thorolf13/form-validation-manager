@@ -19,6 +19,6 @@ describe('or validator', () => {
   })
 
   it('should be KO', () => {
-    expect(validator.isValid(5, context)).to.equal(false)
+    expect(validator.hasError(1, context)).to.not.eql(false)
   })
 });

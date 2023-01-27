@@ -21,7 +21,7 @@ describe('is-string validator', () => {
   });
 
   it('should be KO', () => {
-    expect(validator.isValid(1, context)).to.equal(false);
-    expect(validator.isValid({}, context)).to.equal(false);
+    expect(validator.hasError(1, context)).to.not.equal(false);
+    expect(validator.hasError({}, context)).to.not.equal(false);
   });
 });

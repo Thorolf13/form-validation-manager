@@ -16,8 +16,8 @@ export default {
 
 
         if (vals) {
-          let component = new Component(this, null);
-          const fvm = new Fvm(component, vals);
+          // let component = new Component(this, null);
+          const fvm = new Fvm(this, null, vals);
           this._fvm = fvm;
         }
 

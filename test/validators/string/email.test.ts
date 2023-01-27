@@ -63,7 +63,7 @@ describe('email validator', () => {
     ];
 
     for (const address of addresses) {
-      expect(validator.isValid(address, context)).to.equal(false);
+      expect(validator.hasError(address, context)).to.not.equal(false);
 
     }
   });

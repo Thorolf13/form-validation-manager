@@ -19,6 +19,6 @@ describe('regexp validator', () => {
   });
 
   it('should be KO', () => {
-    expect(regexp(/\w{3}/).isValid('aa', context)).to.equal(false);
+    expect(regexp(/\w{3}/).hasError('aa', context)).to.not.equal(false);
   });
 });

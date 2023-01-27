@@ -1,8 +1,9 @@
-import { EventEmitter } from "../commons/event"
+import { computed, ComputedRef, reactive, UnwrapNestedRefs } from "vue-demi"
+// import { EventEmitter } from "../commons/event"
+import { State } from "../validation/state"
+import { ValidationNode } from "../validation/validation-node"
 import { Component } from "../vue-integration/component"
-import { EventsList, ValidatorsTree } from "./types"
-import { ValidationGroup } from "./validation/validation-group"
-import { ValidationNode } from "./validation/validation-node";
+import { ValidatorsTree } from "./types"
 
 export type ValidationApi<T> = {
   $errors: string[]
@@ -13,22 +14,27 @@ export type ValidationApi<T> = {
   $dirty: boolean;
   $pristine: boolean;
   $pending: boolean;
+  validate (): void;
 } & {
     [P in keyof T]: P extends "$each" ? ValidationApi<T[P]>[] : ValidationApi<T[P]>;
   }
 
-function buildApi (node: ValidationNode) {
+function buildApi<T> (node: ValidationNode<T>): ValidationApi<T> {
   const api: any = {
-    get $errors () { return node.$errors },
-    get $error () { return node.$error },
-    get $invalid () { return node.$invalid },
-    get $valid () { return node.$valid },
-    get $isValid () { return node.$isValid },
-    get $dirty () { return node.$dirty },
-    get $pristine () { return node.$pristine },
-    get $pending () { return node.$pending },
+    get $errors () {
+      const errors = node.getErrorsComputed().value;
+      return errors === false ? [] : errors;
+    },
+    get $error () { return this.$errors !== false },
+    get $invalid () { return this.$errors !== false },
+    get $valid () { return this.$errors === false },
+    get $isValid () { return this.$errors === false },
 
-    set $dirty (value) { node.$dirty = value },
+    get $dirty () { return node.getDirtyComputed().value },
+    set $dirty (value) { node.setDirty(value) },
+    get $pristine () { return this.$dirty === false },
+
+    validate () { return node.validate() }
   }
 
   for (const child in node.children) {
@@ -39,25 +45,29 @@ function buildApi (node: ValidationNode) {
 }
 
 export class Fvm<T extends ValidatorsTree> {
-  public rootNode!: ValidationGroup;
-  public events: EventEmitter<EventsList>;
+  public rootNode!: ValidationNode<T>;
+  // public events: EventEmitter<EventsList>;
 
-  constructor (private component: Component, public validators: T) {
-    this.events = new EventEmitter();
+  constructor (private component: any | null, private state: any | null, public validators: T) {
+    // this.events = new EventEmitter();
 
   }
 
+  private getState () {
+    return this.state || this.component.$data || this.component.$options.data();
+  }
+
   buildValidationTree () {
-    this.rootNode = new ValidationGroup(this.validators, '', this.component, this.events);
+    const internalState = new State(this.component, this.getState())
+    this.rootNode = new ValidationNode('', null, this.validators, internalState)
   }
 
   destroy () {
     this.rootNode.destroy();
   }
 
-  getPublicApi (): ValidationApi<T> & { $events: EventEmitter<EventsList> } {
-    const api = buildApi(this.rootNode)
-    api.$events = this.events
-    return api;
+  // getPublicApi (): ValidationApi<T> & { $events: EventEmitter<EventsList> } {
+  getPublicApi (): UnwrapNestedRefs<ValidationApi<T>> {
+    return reactive(buildApi(this.rootNode))
   }
 }

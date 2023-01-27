@@ -25,7 +25,7 @@ describe('andSequence validator', () => {
       custom(() => false),
       custom(() => true)
     );
-    expect(validator.isValid(1, context)).to.eql(false)
+    expect(validator.hasError(1, context)).to.not.eql(false)
   })
 
   it('should be KO - error at 2nd validator', () => {
@@ -34,24 +34,21 @@ describe('andSequence validator', () => {
       custom(() => true),
       custom(() => {
         assert.fail('should never be called');
-        return true;
       })
     );
-    expect(validator.isValid(1, context)).to.eql(false)
+    expect(validator.hasError(1, context)).to.not.eql(false)
   })
 
-  it('should be KO - error at 21stnd validator', () => {
+  it('should be KO - error at 1st validator', () => {
     const validator = andSequence(
       custom(() => true),
       custom(() => {
         assert.fail('should never be called');
-        return true;
       }),
       custom(() => {
         assert.fail('should never be called');
-        return true;
       })
     );
-    expect(validator.isValid(1, context)).to.eql(false)
+    expect(validator.hasError(1, context)).to.not.eql(false)
   })
 });

@@ -1,8 +1,8 @@
-import { async } from "../../../src";
-import { AsyncValidator, HasErrorCallbackReturn, Validator } from "../../../src/validators/validator";
+import { async, Validator } from "../../../src";
 
 import { describe, it } from "mocha"
 import { expect } from "chai";
+import { Errors } from "../../../src/validators/validator";
 
 
 
@@ -16,7 +16,7 @@ describe('async validator', () => {
 
   it('should be instance of Validator', () => {
     const validator = async(function () { return new Promise(() => { }) });
-    expect(validator instanceof AsyncValidator).to.equal(true)
+    expect(validator instanceof Validator).to.equal(true)
   })
 
   it('should call callback with component as \'this\'', () => {
@@ -28,19 +28,25 @@ describe('async validator', () => {
     validator.hasError(1, context);
   })
 
+  function expectPromiseErrorEqual (errors: any, expected: Errors) {
+    expect(errors).to.be.instanceOf(Promise);
+    (errors as any as Promise<Error>).then(response => expect(response).to.eql(expected));
+  }
+
   it('should be OK', () => {
-    async(() => new Promise(resolve => resolve(false))).hasError(1, context).then(response => expect(response).to.equal(false));
-    async(() => new Promise(resolve => resolve([]))).hasError(1, context).then(response => expect(response).to.equal(false));
-    async(() => new Promise(resolve => resolve(null as any))).hasError(1, context).then(response => expect(response).to.equal(false));
-    async(() => new Promise(resolve => resolve(undefined as any))).hasError(1, context).then(response => expect(response).to.equal(false));
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve(false))).hasError(1, context), false);
+
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve([]))).hasError(1, context), false);
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve(null as any))).hasError(1, context), false);
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve(undefined as any))).hasError(1, context), false);
   })
 
   it('should be KO', () => {
-    async(() => new Promise(resolve => resolve(true))).hasError(1, context).then(response => expect(response).to.eql(['ASYNC_ERROR']));
-    async(() => new Promise(resolve => resolve([true, false]))).hasError(1, context).then(response => expect(response).to.eql(['ASYNC_ERROR']));
-    async(() => new Promise(resolve => resolve('TEST'))).hasError(1, context).then(response => expect(response).to.eql(['TEST']));
-    async(() => new Promise(resolve => resolve(['TEST1', 'TEST2']))).hasError(1, context).then(response => expect(response).to.eql(['TEST1', 'TEST2']));
-    async(() => new Promise(resolve => resolve(['TEST1', 'TEST2', false, true]))).hasError(1, context).then(response => expect(response).to.eql(['TEST1', 'TEST2']));
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve(true))).hasError(1, context), ['ASYNC_ERROR']);
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve([true, false]))).hasError(1, context), ['ASYNC_ERROR']);
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve('TEST'))).hasError(1, context), ['TEST']);
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve(['TEST1', 'TEST2']))).hasError(1, context), ['TEST1', 'TEST2']);
+    expectPromiseErrorEqual(async(() => new Promise(resolve => resolve(['TEST1', 'TEST2', false, true]))).hasError(1, context), ['TEST1', 'TEST2']);
   })
 
   it('should debounce multiples calls', async () => {

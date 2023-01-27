@@ -31,7 +31,7 @@ module.exports = {
   // plugins: [
   //   new TypescriptDeclarationPlugin()
   // ],
-  // optimization: {
-  //   minimize: false
-  // },
+  optimization: {
+    minimize: false
+  },
 };
