@@ -26,15 +26,12 @@ export class ValidationNode<T extends ValidatorTree<T>> {
       this.validator = this.validators as any;
       this.isFinalNode = true;
 
-      this.watch(() => { this.setDirty(true); this.validate(); });
+      this.state.watch(this.getPropertyPath(), () => { this.setDirty(true); this.validate(); }, { deep: true });
     } else {
       for (const key in this.validators) {
         if (key === '$each') {
-          this.watchImmediate(() => {
-            try { (this.children as any)[key].destroy(); } catch (e) { }
-            const node: ValidationNode<any> = this.each(this.validators[key] as any);
-            (this.children as any)[key] = node as any;
-          });
+          this.buildEachChildren();
+          this.state.watch(this.getPropertyPath() + '.length', () => { this.buildEachChildren(true); }, { deep: true });
         } else {
           const validator = this.validators[key] as ValidatorTree<any>;
           const childPath = /\$each$/.test(this.path) ? this.path + '[' + key + ']' : this.path + '.' + key;
@@ -42,6 +39,12 @@ export class ValidationNode<T extends ValidatorTree<T>> {
         }
       }
     }
+  }
+
+  private buildEachChildren (validate = false) {
+    try { (this.children as any)['$each'].destroy(); } catch (e) { }
+    const node: ValidationNode<any> = this.each((this.validators as any)['$each']);
+    (this.children as any)['$each'] = node as any;
   }
 
   private each (validators: Validator | ValidatorTree<any>): ValidationNode<any> {
@@ -54,15 +57,12 @@ export class ValidationNode<T extends ValidatorTree<T>> {
     return new ValidationNode(this.path + '.$each', this, subValidators, this.state);
   }
 
-  watchImmediate (callback: () => void) {
-    this.watch(callback, true);
-  }
-  watch (callback: () => void, immediate = false) {
-    this.unwatch = this.state.watch(this.path, callback, { deep: true, immediate });
+  getPropertyPath (): string {
+    return this.path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
   }
 
   private getValue (): any {
-    return this.state.getPropertyValue(this.path);
+    return this.state.getPropertyValue(this.getPropertyPath());
   }
 
   protected parseIndexes (path: string) {

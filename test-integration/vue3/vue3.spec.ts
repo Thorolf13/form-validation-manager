@@ -74,7 +74,7 @@ describe('validation - options API', () => {
 
     wrapper.setData({ val1: 4 });
     await wrapper.vm.$nextTick();
-    console.log(wrapper.vm.$fvm.$errors);
+    // console.log(wrapper.vm.$fvm.$errors);
 
     expect(JSON.parse(wrapper.text())).toEqual(["val1[EQ_ERROR]"]);
   });

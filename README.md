@@ -1,5 +1,13 @@
 # ! outdated !
 
+most of the documentation is still valid but some parts are outdated
+vue3 parts are not yet documented
+
+vue3 options api work one the same way as vue2
+vue3 composition api is supported but not documented yet
+
+for vue2 only support, you can steel use v1.x.x
+
 # Form Validation Manager - fvm
 
 ![Test](https://img.shields.io/badge/Tests-98/98-green.svg)
@@ -50,12 +58,6 @@ Import the library and use as a Vue plugin to enable the functionality globally 
 import Vue from 'vue'
 import Fvm from 'form-validation-manager'
 Vue.use(Fvm)
-```
-
-Optional : you can customise the validations property name :\
-_default = 'validations'_
-```ts
-Vue.use(Fvm, {validationsPropertyName:'myValidationsProperty'})
 ```
 
 ## Basic usage

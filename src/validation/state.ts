@@ -60,20 +60,18 @@ export class State {
     return this.validationNodes[path];
   }
 
-  getPropertyValue (path: string) {
-    path = path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
+  getPropertyValue (propertyPath: string) {
     const state = this.componentState || this.componentInstance?.$data || this.componentInstance?.$options?.data();
 
-    const value = get(state, path);
+    const value = get(state, propertyPath);
     return value;
   }
 
-  watch (path: string, callback: (oldValue: any, newValue: any) => void, options: { deep?: boolean, immediate?: boolean; }) {
-    path = path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
+  watch (propertyPath: string, callback: (oldValue: any, newValue: any) => void, options: { deep?: boolean, immediate?: boolean; }) {
     if (this.componentInstance?.$watch) {
-      return this.componentInstance.$watch(path, callback, options);
+      return this.componentInstance.$watch(propertyPath, callback, options);
     } else {
-      return watch(() => this.getPropertyValue(path), callback, options);
+      return watch(() => this.getPropertyValue(propertyPath), callback, options);
     }
   }
 }

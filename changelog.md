@@ -1,5 +1,8 @@
+## 2.0.2
+* rework on core functions, add integration tests
+
 ## 2.0.0.beta.1
-* make it compatible with vue2, vue3(options api) and vue3(composition api)
+* trying to make it compatible with vue2, vue3(options api) and vue3(composition api)
 
 ## 1.11.3
 * fix required validator for object (bug when used on file input)

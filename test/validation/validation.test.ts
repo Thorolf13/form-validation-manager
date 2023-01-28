@@ -79,7 +79,7 @@ describe('validation tree', () => {
     expect(rootNode.children!.a.children!.$each.children![2]).to.equal(undefined);
 
     componentState.a.push({ b: 3 });
-    state.triggerWatch('a', componentState.a, [{ b: 1 }, { b: 2 }]);
+    state.triggerWatch('a.length', 3, 2);
 
     expect(rootNode.children!.a.children!.$each.children![0].children!.b).to.not.equal(undefined);
     expect(rootNode.children!.a.children!.$each.children![1].children!.b).to.not.equal(undefined);
@@ -107,6 +107,7 @@ describe('validation tree', () => {
 
     const state = new StateMock({ a: 0, b: { c: 0 }, d: [{ e: 0 }, { e: 0 }], f: { g: 0 } });
     const rootNode = new ValidationNode('', null, validators, state);
+    rootNode.validate();
 
     expect(rootNode.children.a.getErrors()).to.eql(['a[EQ_ERROR]']);
 
@@ -137,6 +138,7 @@ describe('validation tree', () => {
     const computedState = { d: [{ e: 1 }, { e: 1 }] };
     const state = new StateMock(computedState);
     const rootNode = new ValidationNode('', null, validators, state);
+    rootNode.validate();
 
     expect(rootNode.getErrors()).to.eql(false);
 
@@ -144,7 +146,7 @@ describe('validation tree', () => {
 
     computedState.d[0].e = 0;
     state.triggerWatch('d[0].e', computedState.d[0].e, 1);
-    state.triggerWatch('d', computedState.d, [{ e: 0 }, { e: 1 }]);
+    // state.triggerWatch('d', computedState.d, [{ e: 0 }, { e: 1 }]);
 
     // await sleep(100)
 
@@ -161,6 +163,7 @@ describe('validation tree', () => {
     const computedState = { a: 1 };
     const state = new StateMock(computedState);
     const rootNode = new ValidationNode('', null, validators, state);
+    rootNode.validate();
 
     expect(rootNode.getErrors()).to.eql(false);
 
