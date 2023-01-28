@@ -1,14 +1,11 @@
-# ! outdated !
+# beta version of fvm for vue3 (composition api) and vue2
 
-most of the documentation is still valid but some parts are outdated
-vue3 parts are not yet documented
-
-vue3 options api work one the same way as vue2
-vue3 composition api is supported but not documented yet
-
-for vue2 only support, you can steel use v1.x.x
+Some bugs may still present, please report them
 
 # Form Validation Manager - fvm
+
+v2.x.x is compatible with vue2, vue3(options api) and vue3(composition api)
+v1.x.x is only compatible with vue2
 
 ![Test](https://img.shields.io/badge/Tests-95/95-green.svg)
 ![Coverage](https://img.shields.io/badge/Coverage-90%25-green.svg)
@@ -19,7 +16,7 @@ for vue2 only support, you can steel use v1.x.x
 ### Simple, lightweight model-based validation for Vue.js
 
 > Inpired by vuelidate
->> This plugin usage is very similar of vuelidate
+>> This plugin usage is similar of vuelidate
 >
 > Why a new plugin ?
 >> Instead of vuelidate this one allow fine error report and custom messages\
