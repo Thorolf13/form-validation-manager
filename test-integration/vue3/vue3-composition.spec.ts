@@ -18,9 +18,9 @@ describe('validation - composition API', () => {
           val1: 5
         });
 
-        const validation = useFvm({
+        const validation = useFvm(form, {
           val1: eq(5)
-        }, form);
+        });
 
         // console.log('validation', validation);
 
@@ -45,9 +45,9 @@ describe('validation - composition API', () => {
           val1: 5
         });
 
-        const validation = useFvm({
+        const validation = useFvm(form, {
           val1: eq(4)
-        }, form);
+        });
 
         return { validation, form };
       }
@@ -69,9 +69,9 @@ describe('validation - composition API', () => {
         const form = reactive({
           val1: 5
         });
-        const validation = useFvm({
+        const validation = useFvm(form, {
           val1: eq(5)
-        }, form);
+        });
 
         return { validation, form };
       }

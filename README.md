@@ -10,8 +10,8 @@ for vue2 only support, you can steel use v1.x.x
 
 # Form Validation Manager - fvm
 
-![Test](https://img.shields.io/badge/Tests-98/98-green.svg)
-![Coverage](https://img.shields.io/badge/Coverage-85%25-green.svg)
+![Test](https://img.shields.io/badge/Tests-95/95-green.svg)
+![Coverage](https://img.shields.io/badge/Coverage-90%25-green.svg)
 ![Dependencies](https://img.shields.io/badge/Dependencies-0-green.svg)
 ![Typescript](https://img.shields.io/badge/Made%20with-Typescript-blue.svg)
 ![LGPL3](https://img.shields.io/badge/Licence-LGPL%20V3-yellow.svg)
@@ -62,6 +62,8 @@ Vue.use(Fvm)
 
 ## Basic usage
 
+### Options API (Vue 2)
+
 ```ts
 import { and, required, numeric, gte, length } from 'form-validation-manager'
 
@@ -89,6 +91,7 @@ export default {
   }
 }
 ```
+
 a validation oject is generated with the same tree as 'validations'
 
 ```ts
@@ -103,7 +106,7 @@ a validation oject is generated with the same tree as 'validations'
   $pristine:Boolean,
   $pending:Boolean,
 
-  $events:EventEmitter,
+  validate: ()=>void
 
   form:{
     $errors:String[],
@@ -113,6 +116,9 @@ a validation oject is generated with the same tree as 'validations'
     $dirty:Boolean,
     $pristine:Boolean,
     $pending:Boolean,
+
+    validate: ()=>void
+
     name:{
       $errors:String[],
       $error:Boolean,
@@ -125,6 +131,7 @@ a validation oject is generated with the same tree as 'validations'
     }
   }
 }
+
 ```
 * _$errors_ : 
   *  string[]
@@ -135,8 +142,49 @@ a validation oject is generated with the same tree as 'validations'
 *  _$dirty_ : node (or sub nodes) have been edited by user
 *  _$pristine_ : node (or sub nodes) have not been edited by user
 *  _$pending_ : node (or sub nodes) wait for an async validation result
-*  _$events_ : an event manager, see [Evennts](#events)
+*  _validate : force validation of node (and sub nodes)
 
+### Composition API
+
+```ts
+import { and, required, numeric, gte, length } from 'form-validation-manager'
+
+export default {
+  setup () {
+  const form = reactive({
+    val1: 5
+  });
+
+  const validation = useFvm(form, {
+    val1: eq(5)
+  });
+
+  return { validation, form };
+  }
+}
+```
+
+```ts
+//generated object
+//validation
+{
+  $errors:String[],
+  $error:Boolean,
+  $isValid:Boolean,
+  $invalid:Boolean,
+  $dirty:Boolean,
+  $pristine:Boolean,
+  $pending:Boolean,
+
+  validate: ()=>void
+
+  val1:{
+    $errors:String[],
+    $error:Boolean,
+    [...]
+  }
+}
+```
 
 ## Specials nodes
 ```ts
@@ -295,40 +343,6 @@ export default {
 ```
 the property '$errors' will contain defined errors messages if field isnt valid.
 
-## Events
-
-events a fired when a validaztion is pending or done. An event manager is accessible at
-```ts
-this.$form.$events:EventEmitter;
-```
-
-```ts
-//class EventEmitter
-//type T = 'pending'|'done'
-on(event: T, listener: Listener): () => void // listen for events of type T, return off function
-off(event: T, listener: Listener): void //stop listen
-removeAll(): void //remove all Listeners
-emit(event: T, ...args: any[]): void //trigger event
-once(event: T, listener: Listener): void //listen for only one event of type T
-```
-
-```ts
-export default {
-  data () {
-    return {
-      form:{
-        age: 0
-      }
-    }
-  },
-  created(){
-    this.on('done', (args)=>{
-      // do something
-    })
-  }
-}
-```
-
 ## Custom validation
 ### component method
 a custom method can be used as validator.\
@@ -364,7 +378,7 @@ myValidationMethod must return false if no error and true|string|string[] if one
 optional `indexes` : contain `$each` loops indexes, see [$each](##Arrays) section
 
 ### Reusable validator
-You may want to define a validator and use it in ndifferent components\
+You may want to define a validator and use it in different components\
 best way is to define it in separate .js file
 ```ts
 import { Validator } from 'form-validation-manager';
@@ -422,12 +436,11 @@ export default {
           // async stuf
           resolve(myValidationResult)
         })
-      },  forceRenderUpdateAuto, debounceTime)
+      }, debounceTime)
     }
   },
 }
 ```
-* _forceRenderUpdateAuto: boolean_ : optional, default=true, if true call component.$forceUpdate after promise resolution
 * _debounceTime: number_ : in ms, optional, default=0, if > 0 debounce calls
 
 Before submiting form, you must wait for $pending == false.\
@@ -436,23 +449,8 @@ Exemples :
 ```html
 <form>
   <!-- -->
-  <button type="submit" :disabled="$form.$pending" @click="submit()">Send</button>
+  <button type="submit" :disabled="$form.$pending || $form.$error" @click="submit()">Send</button>
 </form>
-```
-* Use events
-```ts
-submit(){
-  this.loading = true;
-  const stopListening = this.$form.$events.on('done', ()=>{
-    if( this.$form.$pending == false){ //check for pending, multiple asynbc validation can 
-      this.loading = false;
-      stopListening();
-      if( this.$form.$isValid ){
-        //...
-      }
-    }
-  })
-}
 ```
 
 ## Integration with vuetify
