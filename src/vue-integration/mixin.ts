@@ -8,24 +8,26 @@ export default {
   install (Vue: any) {
     Vue.mixin({
       beforeCreate () {
-        const vals = this.$options[VALIDATIONS_PROPERTY_NAME];
+        const rules = this.$options[VALIDATIONS_PROPERTY_NAME];
 
-        if (!vals) return;
+        if (!rules) return;
         if (!this.$options.computed) this.$options.computed = {};
         if (this.$options.computed.$fvm) return;
 
 
-        if (vals) {
+        if (rules) {
           // let component = new Component(this, null);
-          const fvm = new Fvm(this, null, vals);
+          const fvm = new Fvm(this, null, rules);
           this._fvm = fvm;
         }
 
         this.$options.computed.$fvm = function () {
+          if (!this._fvm) return;
+
           if (!this._fvm.rootNode) {
             this._fvm.buildValidationTree();
           }
-          return this._fvm?.getPublicApi();
+          return this._fvm.getPublicApi();
         };
       },
       beforeDestroy () {

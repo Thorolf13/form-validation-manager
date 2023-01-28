@@ -69,7 +69,7 @@ describe('validation tree', () => {
       }
     };
 
-    const componentState = { a: [{ b: 1 }, { b: 2 }] }
+    const componentState = { a: [{ b: 1 }, { b: 2 }] };
     const state = new StateMock(componentState);
     const rootNode = new ValidationNode('', null, validators, state);
 
@@ -108,21 +108,21 @@ describe('validation tree', () => {
     const state = new StateMock({ a: 0, b: { c: 0 }, d: [{ e: 0 }, { e: 0 }], f: { g: 0 } });
     const rootNode = new ValidationNode('', null, validators, state);
 
-    expect(rootNode.children.a.getErrorsComputed().value).to.eql(['a[EQ_ERROR]']);
+    expect(rootNode.children.a.getErrors()).to.eql(['a[EQ_ERROR]']);
 
-    expect(rootNode.children.b.children.c.getErrorsComputed().value).to.eql(['b.c[EQ_ERROR]']);
-    expect(rootNode.children.b.getErrorsComputed().value).to.eql(['b.c[EQ_ERROR]']);
+    expect(rootNode.children.b.children.c.getErrors()).to.eql(['b.c[EQ_ERROR]']);
+    expect(rootNode.children.b.getErrors()).to.eql(['b.c[EQ_ERROR]']);
 
-    expect(rootNode.children.d.children.$each.children[0].children.e.getErrorsComputed().value).to.eql(['d.$each[0].e[EQ_ERROR]']);
-    expect(rootNode.children.d.children.$each.children[1].children.e.getErrorsComputed().value).to.eql(['d.$each[1].e[EQ_ERROR]']);
-    expect(rootNode.children.d.children.$each.getErrorsComputed().value).to.eql(['d.$each[0].e[EQ_ERROR]', 'd.$each[1].e[EQ_ERROR]']);
-    expect(rootNode.children.d.getErrorsComputed().value).to.eql(['d.$each[0].e[EQ_ERROR]', 'd.$each[1].e[EQ_ERROR]']);
+    expect(rootNode.children.d.children.$each.children[0].children.e.getErrors()).to.eql(['d.$each[0].e[EQ_ERROR]']);
+    expect(rootNode.children.d.children.$each.children[1].children.e.getErrors()).to.eql(['d.$each[1].e[EQ_ERROR]']);
+    expect(rootNode.children.d.children.$each.getErrors()).to.eql(['d.$each[0].e[EQ_ERROR]', 'd.$each[1].e[EQ_ERROR]']);
+    expect(rootNode.children.d.getErrors()).to.eql(['d.$each[0].e[EQ_ERROR]', 'd.$each[1].e[EQ_ERROR]']);
 
-    expect(rootNode.children.f.children.$self.getErrorsComputed().value).to.eql(['f.$self[CUSTOM_ERROR]']);
-    expect(rootNode.children.f.children.g.getErrorsComputed().value).to.eql(['f.g[EQ_ERROR]']);
-    expect(rootNode.children.f.getErrorsComputed().value).to.eql(['f.$self[CUSTOM_ERROR]', 'f.g[EQ_ERROR]']);
+    expect(rootNode.children.f.children.$self.getErrors()).to.eql(['f.$self[CUSTOM_ERROR]']);
+    expect(rootNode.children.f.children.g.getErrors()).to.eql(['f.g[EQ_ERROR]']);
+    expect(rootNode.children.f.getErrors()).to.eql(['f.$self[CUSTOM_ERROR]', 'f.g[EQ_ERROR]']);
 
-    expect(rootNode.getErrorsComputed().value).to.eql(['a[EQ_ERROR]', 'b.c[EQ_ERROR]', 'd.$each[0].e[EQ_ERROR]', 'd.$each[1].e[EQ_ERROR]', 'f.$self[CUSTOM_ERROR]', 'f.g[EQ_ERROR]']);
+    expect(rootNode.getErrors()).to.eql(['a[EQ_ERROR]', 'b.c[EQ_ERROR]', 'd.$each[0].e[EQ_ERROR]', 'd.$each[1].e[EQ_ERROR]', 'f.$self[CUSTOM_ERROR]', 'f.g[EQ_ERROR]']);
   });
 
   it('should update validation', async () => {
@@ -138,7 +138,7 @@ describe('validation tree', () => {
     const state = new StateMock(computedState);
     const rootNode = new ValidationNode('', null, validators, state);
 
-    expect(rootNode.getErrorsComputed().value).to.eql(false);
+    expect(rootNode.getErrors()).to.eql(false);
 
     // await sleep(100)
 
@@ -148,8 +148,8 @@ describe('validation tree', () => {
 
     // await sleep(100)
 
-    expect(rootNode.children.d.children.$each.children[0].children.e.getErrorsComputed().value).to.eql(['d.$each[0].e[EQ_ERROR]']);
-    expect(rootNode.getErrorsComputed().value).to.eql(['d.$each[0].e[EQ_ERROR]']);
+    expect(rootNode.children.d.children.$each.children[0].children.e.getErrors()).to.eql(['d.$each[0].e[EQ_ERROR]']);
+    expect(rootNode.getErrors()).to.eql(['d.$each[0].e[EQ_ERROR]']);
   });
 
   it('should update validation after async validation', async () => {
@@ -162,36 +162,36 @@ describe('validation tree', () => {
     const state = new StateMock(computedState);
     const rootNode = new ValidationNode('', null, validators, state);
 
-    expect(rootNode.getErrorsComputed().value).to.eql(false);
+    expect(rootNode.getErrors()).to.eql(false);
 
-    await sleep(50)
-    expect(rootNode.getErrorsComputed().value).to.eql(false);
-    expect(rootNode.getPendingComputed().value).to.eql(true);
+    await sleep(50);
+    expect(rootNode.getErrors()).to.eql(false);
+    expect(rootNode.getPending()).to.eql(true);
 
-    await sleep(100)
-    expect(rootNode.getErrorsComputed().value).to.eql(['a[ASYNC_ERROR]']);
-    expect(rootNode.getPendingComputed().value).to.eql(false);
+    await sleep(100);
+    expect(rootNode.getErrors()).to.eql(['a[ASYNC_ERROR]']);
+    expect(rootNode.getPending()).to.eql(false);
 
     computedState.a = 2;
     state.triggerWatch('a', 2, 1);
 
-    await sleep(50)
-    expect(rootNode.getErrorsComputed().value).to.eql(false);
-    expect(rootNode.getPendingComputed().value).to.eql(true);
+    await sleep(50);
+    expect(rootNode.getErrors()).to.eql(false);
+    expect(rootNode.getPending()).to.eql(true);
 
-    await sleep(100)
-    expect(rootNode.getErrorsComputed().value).to.eql(['a[ASYNC_ERROR]']);
-    expect(rootNode.getPendingComputed().value).to.eql(false);
+    await sleep(100);
+    expect(rootNode.getErrors()).to.eql(['a[ASYNC_ERROR]']);
+    expect(rootNode.getPending()).to.eql(false);
 
     computedState.a = 0;
     state.triggerWatch('a', 0, 2);
 
-    await sleep(50)
-    expect(rootNode.getErrorsComputed().value).to.eql(false);
-    expect(rootNode.getPendingComputed().value).to.eql(true);
+    await sleep(50);
+    expect(rootNode.getErrors()).to.eql(false);
+    expect(rootNode.getPending()).to.eql(true);
 
-    await sleep(100)
-    expect(rootNode.getErrorsComputed().value).to.eql(false);
-    expect(rootNode.getPendingComputed().value).to.eql(false);
+    await sleep(100);
+    expect(rootNode.getErrors()).to.eql(false);
+    expect(rootNode.getPending()).to.eql(false);
   });
 });

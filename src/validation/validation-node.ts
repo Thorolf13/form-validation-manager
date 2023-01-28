@@ -3,21 +3,22 @@ import { ValidatorTree } from "../validators/validator-tree";
 import { State } from "./state";
 import { isPromise } from "../commons/promise";
 import { computed, ComputedRef } from "vue-demi";
+import { ValidationApi } from "../fvm/fvm";
 
 export class ValidationNode<T extends ValidatorTree<T>> {
   public children: { [K in keyof T]: K extends '$each' ? ValidationNode<T[K][]> : ValidationNode<T[K]> };
   public validator?: Validator;
   public isFinalNode = false;
+  private unwatch = () => { };
 
 
-  constructor (public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
+  constructor(public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
     this.path = path = path.replace(/^\./, '');
+
     state.registerValidationNode(path, this);
 
     this.children = {} as any;
     this.init();
-
-    this.validate();
   }
 
   private init () {
@@ -25,15 +26,15 @@ export class ValidationNode<T extends ValidatorTree<T>> {
       this.validator = this.validators as any;
       this.isFinalNode = true;
 
-      this.state.watch(this.getValuePath(), () => { this.setDirty(true); this.validate(); }, { deep: true });
+      this.watch(() => { this.setDirty(true); this.validate(); });
     } else {
       for (const key in this.validators) {
         if (key === '$each') {
-          this.state.watch(this.getValuePath(), () => {
+          this.watchImmediate(() => {
             try { (this.children as any)[key].destroy(); } catch (e) { }
             const node: ValidationNode<any> = this.each(this.validators[key] as any);
             (this.children as any)[key] = node as any;
-          }, { deep: true, immediate: true })
+          });
         } else {
           const validator = this.validators[key] as ValidatorTree<any>;
           const childPath = /\$each$/.test(this.path) ? this.path + '[' + key + ']' : this.path + '.' + key;
@@ -46,21 +47,22 @@ export class ValidationNode<T extends ValidatorTree<T>> {
   private each (validators: Validator | ValidatorTree<any>): ValidationNode<any> {
     const subValidators: any = {};
 
-    this.getValue().value.forEach((item: any, index: number) => {
+    this.getValue().forEach((item: any, index: number) => {
       subValidators[index] = validators;
-    })
+    });
 
     return new ValidationNode(this.path + '.$each', this, subValidators, this.state);
   }
 
-  private getValuePath () {
-    return this.path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
+  watchImmediate (callback: () => void) {
+    this.watch(callback, true);
+  }
+  watch (callback: () => void, immediate = false) {
+    this.unwatch = this.state.watch(this.path, callback, { deep: true, immediate });
   }
 
-  private getValue (): ComputedRef<any> {
-    return computed(() => {
-      return this.state.getPropertyValue(this.getValuePath());
-    });
+  private getValue (): any {
+    return this.state.getPropertyValue(this.path);
   }
 
   protected parseIndexes (path: string) {
@@ -79,14 +81,33 @@ export class ValidationNode<T extends ValidatorTree<T>> {
   }
 
   private getContext (): Context {
-    const value = this.getValue().value;
+    const value = this.getValue();
     const indexes = this.parseIndexes(this.path);
     return { component: this.state.componentInstance, path: this.path, value, indexes, parent: this.parent?.getContext() };
   }
 
   validate () {
     if (this.validator) {
-      const validation = this.validator.hasError(this.getValue().value, this.getContext());
+      const validation = this.validator.hasError(this.getValue(), this.getContext());
+
+      if (this.validator?.name === 'revalidate') {
+
+        if (validation === false) {
+          return;
+        }
+
+        const paths: string[] = (Array.isArray(validation) ? validation : [validation]) as any;
+
+        paths.forEach(path => {
+          const node = this.state.getValidationNode(path);
+          if (node) {
+            node.validate();
+          } else {
+            console.error('trying to revalidate ' + path + ' : no validator found');
+          }
+        });
+        return;
+      }
 
       if (isPromise(validation)) {
         this.state.setErrors(this.path, '__pending__');
@@ -107,69 +128,55 @@ export class ValidationNode<T extends ValidatorTree<T>> {
     }
   }
 
-  getErrorsComputed () {
+  getErrors () {
     if (this.isFinalNode) {
-      return computed(() => {
-        const errors = this.state.getErrors(this.path);
-        if (errors === '__pending__') {
-          return false;
-        }
-        return errors;
-      });
+      const errors = this.state.getErrors(this.path);
+      if (errors === '__pending__') {
+        return false;
+      }
+      return errors;
     } else {
-      return computed(() => {
-        const errors: string[] = [];
-        for (const key in this.children) {
-          const child = this.children[key];
-          const childErrors = child.getErrorsComputed().value;
-          if (childErrors) {
-            if (Array.isArray(childErrors)) {
-              errors.push(...childErrors);
-            } else {
-              errors.push(childErrors);
-            }
+      const errors: string[] = [];
+      for (const key in this.children) {
+        const child = this.children[key];
+        const childErrors = child.getErrors();
+        if (childErrors) {
+          if (Array.isArray(childErrors)) {
+            errors.push(...childErrors);
+          } else {
+            errors.push(childErrors);
           }
         }
-        return errors.length > 0 ? errors : false;
-      });
+      }
+      return errors.length > 0 ? errors : false;
     }
   }
 
-  getPendingComputed () {
+  getPending () {
     if (this.isFinalNode) {
-      return computed(() => {
-        const errors = this.state.getErrors(this.path);
-        return errors === '__pending__';
-      });
+      return this.state.getErrors(this.path) === '__pending__';
     } else {
-      return computed(() => {
-        for (const key in this.children) {
-          const child = this.children[key];
-          if (child.getPendingComputed().value) {
-            return true;
-          }
+      for (const key in this.children) {
+        const child = this.children[key];
+        if (child.getPending()) {
+          return true;
         }
-        return false;
-      });
-
+      }
+      return false;
     }
   }
 
-  getDirtyComputed () {
+  getDirty () {
     if (this.isFinalNode) {
-      return computed(() => {
-        return this.state.isDirty(this.path);
-      });
+      return this.state.isDirty(this.path);
     } else {
-      return computed(() => {
-        for (const key in this.children) {
-          const child = this.children[key];
-          if (child.getDirtyComputed().value) {
-            return true;
-          }
+      for (const key in this.children) {
+        const child = this.children[key];
+        if (child.getDirty()) {
+          return true;
         }
-        return false;
-      });
+      }
+      return false;
     }
   }
 
@@ -185,12 +192,46 @@ export class ValidationNode<T extends ValidatorTree<T>> {
   }
 
   destroy () {
-    this.state.unregisterValidationNode(this.path);
     if (this.children) {
       for (const key in this.children) {
         const child = this.children[key];
         child.destroy();
+        delete (this.children as any)[key];
       }
     }
+
+    this.state.unregisterValidationNode(this.path);
+    this.unwatch();
   }
+
+  getApi (): ValidationApi<T> {
+    const node = this;
+    const api: any = {
+      get $errors () {
+        const errors = node.getErrors();
+        return errors === false ? [] : errors;
+      },
+
+      get $error () { return node.getErrors() !== false; },
+      get $invalid () { return node.getErrors() !== false; },
+      get $valid () { return !node.getErrors() === false; },
+      get $isValid () { return !node.getErrors() === false; },
+
+      get $dirty () { return node.getDirty(); },
+      set $dirty (value: boolean) { node.setDirty(value); },
+      get $pristine () { return !node.getDirty(); },
+
+
+      get $pending () { return node.getPending(); },
+
+      validate () { return node.validate(); }
+    };
+
+    for (const child in node.children) {
+      api[child] = node.children[child].getApi();
+    }
+
+    return api;
+  }
+
 }

@@ -1,5 +1,5 @@
 import { Errors } from "../validators/validator";
-import { ref, Ref, watch } from "vue-demi";
+import { computed, reactive, ref, Ref, watch } from "vue-demi";
 import { ValidationNode } from "./validation-node";
 import { get } from "../commons/lodash";
 
@@ -12,7 +12,7 @@ export class State {
   errors: Record<string, Ref<_Errors>> = {};
   dirty: Record<string, Ref<boolean>> = {};
 
-  constructor (public componentInstance: any, private componentState: any) {
+  constructor(public componentInstance: any, private componentState: any) {
   }
 
   registerValidationNode (path: string, validationNode: ValidationNode<any>) {
@@ -28,10 +28,23 @@ export class State {
   }
 
   setErrors (path: string, errors: _Errors) {
+    if (this.errors[path] === undefined) {
+      throw new Error(`Cannot set errors for path ${path} because it is not registered`);
+    }
+
+    const oldValue = this.errors[path].value;
     this.errors[path].value = errors;
+
+    if (this.componentInstance?.$forceUpdate && oldValue !== errors) {
+      this.componentInstance.$forceUpdate();
+    }
+    computed;
   }
 
   getErrors (path: string) {
+    if (this.errors[path] === undefined) {
+      throw new Error(`Cannot get errors for path ${path} because it is not registered`);
+    }
     return this.errors[path].value;
   }
 
@@ -48,12 +61,15 @@ export class State {
   }
 
   getPropertyValue (path: string) {
-    const state = this.componentState || this.componentInstance.$data || this.componentInstance.$options.data();
+    path = path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
+    const state = this.componentState || this.componentInstance?.$data || this.componentInstance?.$options?.data();
 
-    return get(state, path);
+    const value = get(state, path);
+    return value;
   }
 
-  watch (path: string, callback: (oldValue: any, newValue: any) => void, options: { deep?: boolean, immediate?: boolean }) {
+  watch (path: string, callback: (oldValue: any, newValue: any) => void, options: { deep?: boolean, immediate?: boolean; }) {
+    path = path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
     if (this.componentInstance?.$watch) {
       return this.componentInstance.$watch(path, callback, options);
     } else {
