@@ -2,7 +2,6 @@ import { computed, ComputedRef, reactive, UnwrapNestedRefs } from "vue-demi";
 // import { EventEmitter } from "../commons/event"
 import { State } from "../validation/state";
 import { ValidationNode } from "../validation/validation-node";
-import { Component } from "../vue-integration/component";
 import { ValidatorsTree } from "./types";
 
 export type ValidationApi<T> = {

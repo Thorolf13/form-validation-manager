@@ -5,7 +5,7 @@ export type Component = any;
 export type Indexes = { length: number; } & Record<string | number, number>;
 
 export type Context = {
-  component: Component;
+  component?: Component;
   path: string,
   indexes?: Indexes,
   parent?: any,
@@ -14,7 +14,6 @@ export type Context = {
 
 export type HasErrorCallbackReturn = boolean | string | Promise<boolean | string | (boolean | string)[]> | (boolean | string | Promise<boolean | string | (boolean | string)[]>)[];
 export type HasErrorCallback = (this: Component, value: any, context: Context) => HasErrorCallbackReturn;
-
 export type Errors = false | string[];
 
 function isPomise<T> (obj: any | Promise<T>): obj is Promise<T> {
@@ -44,7 +43,7 @@ function manageErrors (errors: HasErrorCallbackReturn, defaultError: string): Er
 
 export class Validator {
 
-  constructor (public name: string, private hasErrorCallback: HasErrorCallback) {
+  constructor(public name: string, private hasErrorCallback: HasErrorCallback) {
   }
 
   hasError (value: any, context: Context): Errors | Promise<Errors> {

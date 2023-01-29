@@ -1,6 +1,4 @@
-import { Component } from './component';
 import { Fvm } from '../fvm/fvm';
-import { isVue2, isVue3 } from 'vue-demi';
 
 const VALIDATIONS_PROPERTY_NAME = 'validations';
 
