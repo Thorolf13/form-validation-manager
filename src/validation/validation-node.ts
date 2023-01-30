@@ -2,7 +2,6 @@ import { Context, Indexes, Validator } from "../validators/validator";
 import { ValidatorTree } from "../validators/validator-tree";
 import { State } from "./state";
 import { isPromise } from "../commons/promise";
-import { computed, ComputedRef } from "vue-demi";
 import { ValidationApi } from "../fvm/fvm";
 
 export class ValidationNode<T extends ValidatorTree<T>> {
@@ -12,7 +11,7 @@ export class ValidationNode<T extends ValidatorTree<T>> {
   private unwatch = () => { };
 
 
-  constructor(public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
+  constructor (public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
     this.path = path = path.replace(/^\./, '');
 
     state.registerValidationNode(path, this);

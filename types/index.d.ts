@@ -1,11 +1,9 @@
-type PluginObject<T> {
-  install (Vue: any, options: T): () => void;
+type PluginObject<T> = {
+  install: (Vue: any, options: T) => void;
 };
-
 
 export const Fvm: PluginObject<void>;
 export const FormvalidationManager: PluginObject<void>;
-
 
 
 //validators
@@ -15,7 +13,7 @@ export type Errors = false | string[];
 
 export declare class Validator {
   name: string;
-  constructor(name: string, hasErrorCallback: HasErrorCallback);
+  constructor (name: string, hasErrorCallback: HasErrorCallback);
   hasError (value: any, context: Context): Errors | Promise<Errors>;
 }
 export type Component = any;
@@ -89,43 +87,40 @@ export function revalidate (...paths: string[]): Validator;
 export function withMessage (validator: Validator, message: string): Validator;
 
 
-//api
-export type ValidationApi<T> = {
-  $errors: string[];
-  $error: boolean;
-  $invalid: boolean;
-  $valid: boolean;
-  $isValid: boolean;
-  $dirty: boolean;
-  $pristine: boolean;
-  $pending: boolean;
-
-  setDirty (dirty?: boolean): void;
-  validate (): void;
-} & {
-    [P in keyof T]: P extends "$each" ? ValidationApi<T[P]>[] : ValidationApi<T[P]>;
+// import Vue from 'vue';
+declare module 'vue/types/vue' {
+  type ValidatorTree<V> = {
+    [K in Exclude<keyof V, '$fvm'>]?: Validator | ValidatorTree<V[K]>;
   };
 
-import Vue from 'vue2';
-declare module 'vue/types/vue' {
+  type ValidationApi<V> = {
+    $errors: string[];
+    $error: boolean;
+    $invalid: boolean;
+    $valid: boolean;
+    $isValid: boolean;
+    $dirty: boolean;
+    $pristine: boolean;
+    $pending: boolean;
+
+    setDirty (dirty?: boolean): void;
+    validate (): void;
+  } & {
+      [P in Exclude<keyof V, '$fvm'>]: P extends "$each" ? ValidationApi<V[P]>[] : ValidationApi<V[P]>;
+    };
+
   interface Vue {
-    $fvm: ValidationApi<any>;
+    $fvm: ValidationApi<Vue>;
   }
 }
 
-import { DefaultComputed, DefaultData, DefaultMethods, PropsDefinition, DefaultProps } from 'vue2/types/options';
-import { ValidatorTree } from '../src/validators/validator-tree';
-
 declare module 'vue/types/options' {
 
-  interface ComponentOptions<
-    T extends ValidatorTree<any>,
-    V extends Vue,
-    Data = DefaultData<V>,
-    Methods = DefaultMethods<V>,
-    Computed = DefaultComputed & { $fvm: ValidationApi<T>; },
-    PropsDef = PropsDefinition<DefaultProps>,
-    Props = DefaultProps> {
-    validations?: T;
+  type ValidatorTree<V> = {
+    [K in Exclude<keyof V, '$fvm'>]?: Validator | ValidatorTree<V[K]>;
+  };
+
+  interface ComponentOptions<V> {
+    validations?: ValidatorTree<V>;
   }
 }
