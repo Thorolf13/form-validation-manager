@@ -49,16 +49,16 @@ export default {
       beforeDestroy () {
         if (this._fvm?.fn) {
           this._fvm.fn.destroy();
-          this._fvm = undefined;
-          this.$fvm = undefined;
+          this._fvm.fn = undefined;
+          this._fvm.data = undefined;
         }
       },
 
       unmounted () {
         if (this._fvm?.fn) {
           this._fvm.fn.destroy();
-          this._fvm = undefined;
-          this.$options.computed.$fvm = undefined;
+          this._fvm.fn = undefined;
+          this._fvm.data = undefined;
         }
       }
     });
