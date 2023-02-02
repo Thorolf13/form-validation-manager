@@ -3,13 +3,14 @@ import { State } from "../../src/validation/state";
 export class StateMock extends State {
 
   constructor (state: any) {
-    super(null, state);
+    super(null, state, () => { });
+    this.isRunning = true;
   }
 
-  public watchers: any = {}
+  public __watchers: any = {}
 
   watch (path: string, callback: (oldValue: any, newValue: any) => void, options: { deep?: boolean | undefined; immediate?: boolean | undefined; }) {
-    this.watchers[path] = callback;
+    this.__watchers[path] = callback;
 
     if (options.immediate) {
       this.triggerWatch(path, undefined, this.getPropertyValue(path));
@@ -17,6 +18,6 @@ export class StateMock extends State {
   }
 
   triggerWatch (path: string, newValue: any, oldValue: any,) {
-    this.watchers[path](newValue, oldValue);
+    this.__watchers[path](newValue, oldValue);
   }
 }

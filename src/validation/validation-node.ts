@@ -2,14 +2,11 @@ import { Context, Indexes, Validator } from "../validators/validator";
 import { ValidatorTree } from "../validators/validator-tree";
 import { State } from "./state";
 import { isPromise } from "../commons/promise";
-import { ValidationApi } from "../fvm/fvm";
 
 export class ValidationNode<T extends ValidatorTree<T>> {
   public children: { [K in keyof T]: K extends '$each' ? ValidationNode<T[K][]> : ValidationNode<T[K]> };
   public validator?: Validator;
   public isFinalNode = false;
-  private unwatch = () => { };
-
 
   constructor (public path: string, public parent: ValidationNode<any> | null, public validators: T, private state: State) {
     this.path = path = path.replace(/^\./, '');
@@ -29,8 +26,15 @@ export class ValidationNode<T extends ValidatorTree<T>> {
     } else {
       for (const key in this.validators) {
         if (key === '$each') {
-          this.buildEachChildren();
-          this.state.watch(this.getPropertyPath() + '.length', () => { this.buildEachChildren(true); }, { deep: true });
+          this.state.watch(this.getPropertyPath(), (_new) => {
+            const arrayLengthHaveChanged = !_new ? true : _new.length != Object.keys((this.children as any)['$each']?.children || {}).length;
+            if (arrayLengthHaveChanged) {
+              this.buildEachChildren(true);
+            } else {
+              (this.children as any)['$each'].validate();
+            }
+
+          }, { deep: true, immediate: true });
         } else {
           const validator = this.validators[key] as ValidatorTree<any>;
           const childPath = /\$each$/.test(this.path) ? this.path + '[' + key + ']' : this.path + '.' + key;
@@ -41,26 +45,37 @@ export class ValidationNode<T extends ValidatorTree<T>> {
   }
 
   private buildEachChildren (validate = false) {
-    try { (this.children as any)['$each'].destroy(); } catch (e) { }
+    try {
+      (this.children as any)['$each'].destroy();
+      delete (this.children as any)['$each'];
+    } catch (e) { }
     const node: ValidationNode<any> = this.each((this.validators as any)['$each']);
     (this.children as any)['$each'] = node as any;
+
+    if (validate) {
+      node.validate();
+    }
   }
 
   private each (validators: Validator | ValidatorTree<any>): ValidationNode<any> {
     const subValidators: any = {};
 
-    this.getValue().forEach((item: any, index: number) => {
+    (this.getValue() || []).forEach((item: any, index: number) => {
       subValidators[index] = validators;
     });
 
     return new ValidationNode(this.path + '.$each', this, subValidators, this.state);
   }
 
+  private unwatch () {
+    this.state.unwatch(this.getPropertyPath());
+  }
+
   getPropertyPath (): string {
     return this.path.replace(/^\./, '').replace(/\.\$self/g, '').replace(/\.\$each/g, '');
   }
 
-  private getValue (): any {
+  public getValue (): any {
     return this.state.getPropertyValue(this.getPropertyPath());
   }
 
@@ -79,15 +94,18 @@ export class ValidationNode<T extends ValidatorTree<T>> {
     return indexes.length ? indexes : undefined;
   }
 
-  private getContext (): Context {
+  private getContext (): Context | undefined {
+    if (this.path === '') {
+      return undefined;
+    }
     const value = this.getValue();
     const indexes = this.parseIndexes(this.path);
     return { component: this.state.componentInstance, path: this.path, value, indexes, parent: this.parent?.getContext() };
   }
 
   validate () {
-    if (this.validator) {
-      const validation = this.validator.hasError(this.getValue(), this.getContext());
+    if (this.isFinalNode) {
+      const validation = (this.validator as Validator).hasError(this.getValue(), this.getContext() as Context);
 
       if (this.validator?.name === 'revalidate') {
 
@@ -191,46 +209,16 @@ export class ValidationNode<T extends ValidatorTree<T>> {
   }
 
   destroy () {
+    this.unwatch();
+
     if (this.children) {
       for (const key in this.children) {
         const child = this.children[key];
-        child.destroy();
         delete (this.children as any)[key];
+        child.destroy();
       }
     }
 
     this.state.unregisterValidationNode(this.path);
-    this.unwatch();
   }
-
-  getApi (): ValidationApi<T> {
-    const node = this;
-    const api: any = {
-      get $errors () {
-        const errors = node.getErrors();
-        return errors === false ? [] : errors;
-      },
-
-      get $error () { return node.getErrors() !== false; },
-      get $invalid () { return node.getErrors() !== false; },
-      get $valid () { return !node.getErrors() === false; },
-      get $isValid () { return !node.getErrors() === false; },
-
-      get $dirty () { return node.getDirty(); },
-      set $dirty (value: boolean) { node.setDirty(value); },
-      get $pristine () { return !node.getDirty(); },
-
-
-      get $pending () { return node.getPending(); },
-
-      validate () { return node.validate(); }
-    };
-
-    for (const child in node.children) {
-      api[child] = node.children[child].getApi();
-    }
-
-    return api;
-  }
-
 }

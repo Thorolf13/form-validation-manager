@@ -1,46 +1,52 @@
-import { computed, ComputedRef, reactive, UnwrapNestedRefs } from "vue-demi";
+import { ref } from "vue-demi";
 // import { EventEmitter } from "../commons/event"
 import { State } from "../validation/state";
 import { ValidationNode } from "../validation/validation-node";
+import { buildApi, ValidationApi } from "./api";
 import { ValidatorsTree } from "./types";
 
-export type ValidationApi<T> = {
-  $errors: string[];
-  $error: boolean;
-  $invalid: boolean;
-  $valid: boolean;
-  $isValid: boolean;
-  $dirty: boolean;
-  $pristine: boolean;
-  $pending: boolean;
+export type ApiProxy<T> = {
+  get: () => ValidationApi<T> | undefined;
+  set: (value: ValidationApi<T>) => void;
+}
 
-  setDirty (dirty?: boolean): void;
-  validate (): void;
-} & {
-    [P in keyof T]: P extends "$each" ? ValidationApi<T[P]>[] : ValidationApi<T[P]>;
-  };
 
 export class Fvm<T extends ValidatorsTree> {
   public rootNode!: ValidationNode<T>;
   private internalState: State;
   // public events: EventEmitter<EventsList>;
 
-  constructor(private component: any | null, private state: any | null, public validators: T) {
+  private isRunning = false;
+
+  constructor (private component: any | null, private state: any | null, public validators: T, private apiProxy: ApiProxy<T>) {
     // this.events = new EventEmitter();
-    this.internalState = new State(this.component, this.state);
+    this.internalState = new State(this.component, this.state, () => {
+      if (this.isRunning) {
+        this.buildApi()
+      }
+    });
+    this.rootNode = new ValidationNode('', null, this.validators, this.internalState);
+
+    this.buildApi();
   }
 
-  buildValidationTree () {
-    this.rootNode = new ValidationNode('', null, this.validators, this.internalState);
-    this.rootNode.validate();
+  private buildApi () {
+    const api = buildApi(this.rootNode);
+    this.apiProxy.set(api);
   }
 
   destroy () {
+    this.isRunning = false;
+    this.internalState.stopWatching();
     this.rootNode.destroy();
   }
 
-  // getPublicApi (): ValidationApi<T> & { $events: EventEmitter<EventsList> } {
-  getPublicApi (): ValidationApi<T> {
-    return this.rootNode.getApi();
+  startValidation () {
+    if (this.isRunning) {
+      return;
+    }
+    this.isRunning = true;
+    this.internalState.startWatching();
+    this.rootNode.validate();
   }
 }

@@ -79,7 +79,7 @@ describe('validation tree', () => {
     expect(rootNode.children!.a.children!.$each.children![2]).to.equal(undefined);
 
     componentState.a.push({ b: 3 });
-    state.triggerWatch('a.length', 3, 2);
+    state.triggerWatch('a', componentState.a, [{ b: 1 }, { b: 2 }]);
 
     expect(rootNode.children!.a.children!.$each.children![0].children!.b).to.not.equal(undefined);
     expect(rootNode.children!.a.children!.$each.children![1].children!.b).to.not.equal(undefined);

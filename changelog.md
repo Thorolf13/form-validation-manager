@@ -1,3 +1,6 @@
+## 2.1.0
+* fix reactivity and '$each' node
+
 ## 2.0.2
 * rework on core functions, add integration tests
 

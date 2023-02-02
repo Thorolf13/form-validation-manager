@@ -110,7 +110,7 @@ describe('validation - options API', () => {
 
     wrapper.setData({ form: { val2: 20 } });
     await wrapper.vm.$nextTick();
-    console.log(wrapper.vm.$fvm.$errors);
+    // console.log(wrapper.vm.$fvm.$errors);
 
     expect(JSON.parse(wrapper.text())).toEqual(["errror val2>val1"]);
   });

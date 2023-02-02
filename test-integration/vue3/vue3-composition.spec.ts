@@ -3,7 +3,7 @@
  */
 import { mount } from "@vue/test-utils";
 import { reactive } from "vue";
-import { eq, useFvm } from '../../src';
+import { eq, length, useFvm } from '../../src';
 // import { itVue23 } from "../test-vue23"
 
 describe('validation - composition API', () => {
@@ -87,5 +87,44 @@ describe('validation - composition API', () => {
     await wrapper.vm.$nextTick();
 
     expect(JSON.parse(wrapper.text())).toEqual(["val1[EQ_ERROR]"]);
+  });
+
+  it('should update when push item in array', async () => {
+    const Component = {
+      template: '<div>{{validation.$errors}}</div>',
+      // template: '<div></div>',
+
+      setup () {
+        const form = reactive({
+          arr: [
+            { val1: 5 },
+            { val1: 5 }
+          ]
+        });
+        const validation = useFvm(form, {
+          arr: {
+            $self: length(eq(2)),
+            $each: {
+              val1: eq(4)
+            }
+          }
+        });
+
+        // console.log(validation.value.arr.$each)
+
+        return { validation, form };
+      }
+    } as any;
+
+    const wrapper = mount(Component);
+    await wrapper.vm.$nextTick();
+
+
+    expect(JSON.parse(wrapper.text())).toEqual(["arr.$each[0].val1[EQ_ERROR]", "arr.$each[1].val1[EQ_ERROR]"]);
+
+    wrapper.vm.form.arr.push({ val1: 3 });
+    await wrapper.vm.$nextTick();
+
+    expect(JSON.parse(wrapper.text())).toEqual(["arr.$self[EQ_ERROR]", "arr.$each[0].val1[EQ_ERROR]", "arr.$each[1].val1[EQ_ERROR]", "arr.$each[2].val1[EQ_ERROR]"]);
   });
 });
