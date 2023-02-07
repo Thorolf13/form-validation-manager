@@ -1,5 +1,7 @@
+import andSequence from '../logic/and_sequence';
+import or from '../logic/or';
+import required from '../required';
 import { Validator } from '../validator';
-import { andSequence, required, or } from '../..';
 import isString from './is-string';
 
 const m = '[1-5][0-9]|[0-9]';
@@ -104,8 +106,8 @@ function dateValidation (str: string, format: string) {
  *
  */
 export default function isDate (format: string = "yyyy-MM-dd") {
-  return new Validator('isDate', (value, context) => {
-    return andSequence(
+  return Validator.fromSubValidators('isDate',
+    andSequence(
       required(),
       or(
         new Validator('isDateIntance', value => !(value instanceof Date)),
@@ -114,6 +116,6 @@ export default function isDate (format: string = "yyyy-MM-dd") {
           new Validator('isDateString', value => !dateValidation(value, format))
         )
       )
-    ).hasError(value, context);
-  });
+    )
+  );
 }

@@ -43,7 +43,13 @@ function manageErrors (errors: HasErrorCallbackReturn, defaultError: string): Er
 
 export class Validator {
 
-  constructor(public name: string, private hasErrorCallback: HasErrorCallback) {
+  constructor (public name: string, private hasErrorCallback: HasErrorCallback) {
+  }
+
+  static fromSubValidators (name: string, subValidator: Validator): Validator {
+    return new Validator(name, (value, context) => {
+      return subValidator.hasError(value, context);
+    });
   }
 
   hasError (value: any, context: Context): Errors | Promise<Errors> {
