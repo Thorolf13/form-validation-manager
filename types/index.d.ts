@@ -1,3 +1,25 @@
+import { UnwrapNestedRefs } from "vue";
+
+type ValidationApi<V> = {
+  $errors: string[];
+  $error: boolean;
+  $invalid: boolean;
+  $valid: boolean;
+  $isValid: boolean;
+  $dirty: boolean;
+  $pristine: boolean;
+  $pending: boolean;
+
+  setDirty (dirty?: boolean): void;
+  validate (): void;
+} & {
+    [P in Exclude<keyof V, '$fvm'>]: P extends "$each" ? ValidationApi<V[P]>[] : ValidationApi<V[P]>;
+  };
+
+type ValidatorTree = {
+  [x: string]: Validator | ValidatorTree;
+};
+
 type PluginObject<T> = {
   install: (Vue: any, options: T) => void;
 };
@@ -5,6 +27,9 @@ type PluginObject<T> = {
 export const Fvm: PluginObject<void>;
 export const FormvalidationManager: PluginObject<void>;
 
+export function useFvm (): ValidationApi<any>;
+export function useFvm<T extends ValidatorTree> (rules: T): ValidationApi<T>;
+export function useFvm<T extends ValidatorTree> (state: UnwrapNestedRefs<any>, rules: T): ValidationApi<T>;
 
 //validators
 export type HasErrorCallbackReturn = boolean | string | Promise<boolean | string | (boolean | string)[]> | (boolean | string | Promise<boolean | string | (boolean | string)[]>)[];
@@ -79,7 +104,7 @@ export function isDate (format?: string): Validator;
 export function isString (): Validator;
 export function regexp (regexp: RegExp): Validator;
 export function async (callback: Promise<boolean | string | (boolean | string)[]>, forceRenderUpdateAuto?: boolean, debounceTime?: number): Validator;
-export function custom (callback: HasErrorCallback): Validator;
+export function custom (callback: boolean | string | (boolean | string)[]): Validator;
 export function empty (): Validator;
 export function length (validator: Validator): Validator;
 export function pick (property: string, validator: Validator): Validator;
@@ -93,21 +118,6 @@ declare module 'vue/types/vue' {
     [K in Exclude<keyof V, '$fvm'>]?: Validator | ValidatorTree<V[K]>;
   };
 
-  type ValidationApi<V> = {
-    $errors: string[];
-    $error: boolean;
-    $invalid: boolean;
-    $valid: boolean;
-    $isValid: boolean;
-    $dirty: boolean;
-    $pristine: boolean;
-    $pending: boolean;
-
-    setDirty (dirty?: boolean): void;
-    validate (): void;
-  } & {
-      [P in Exclude<keyof V, '$fvm'>]: P extends "$each" ? ValidationApi<V[P]>[] : ValidationApi<V[P]>;
-    };
 
   interface Vue {
     $fvm: ValidationApi<Vue>;
@@ -116,11 +126,9 @@ declare module 'vue/types/vue' {
 
 declare module 'vue/types/options' {
 
-  type ValidatorTree<V> = {
-    [K in Exclude<keyof V, '$fvm'>]?: Validator | ValidatorTree<V[K]>;
-  };
 
-  interface ComponentOptions<V> {
-    validations?: ValidatorTree<V>;
+
+  interface ComponentOptions {
+    validations?: ValidatorTree;
   }
 }
