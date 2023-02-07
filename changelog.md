@@ -1,3 +1,11 @@
+## 2.2.2
+* fix doc
+
+## 2.2.0
+* use bili for packaging
+* change vue3 options api integration
+* update doc
+
 ## 2.1.0
 * fix reactivity and '$each' node
 

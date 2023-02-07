@@ -9,7 +9,7 @@ v1.x.x is only compatible with vue2
 
 ![Test](https://img.shields.io/badge/Tests-95/95-green.svg)
 ![Coverage](https://img.shields.io/badge/Coverage-90%25-green.svg)
-![Dependencies](https://img.shields.io/badge/Dependencies-0-green.svg)
+![Dependencies](https://img.shields.io/badge/Dependencies-1-green.svg)
 ![Typescript](https://img.shields.io/badge/Made%20with-Typescript-blue.svg)
 ![LGPL3](https://img.shields.io/badge/Licence-LGPL%20V3-yellow.svg)
 
@@ -25,7 +25,7 @@ v1.x.x is only compatible with vue2
 * Model based
 * Decoupled from templates
 * Minimalistic library
-* No dependencies
+* Only dependent to vue-demi (for compatibility)
 * Support for collection validations
 * Support for nested models
 * Contextified validators
@@ -35,7 +35,10 @@ v1.x.x is only compatible with vue2
 > **_Summary_**
 > * [Installation](#installation)
 > * [Basic usage](#basic-usage)
-> * [Validators](#validtors)
+>   * [Vue2](#vue2-options-api)
+>   * [Vue3 options-api](#vue3-options-api)
+>   * [Vue3 composition-api](#vue3-composition-api)
+> * [Validators](#validators)
 > * [Arrays](#arrays)
 > * [Messages](#messages)
 > * [Events](#events)
@@ -49,17 +52,19 @@ v1.x.x is only compatible with vue2
 npm install form-validation-manager --save
 ```
 
-Import the library and use as a Vue plugin to enable the functionality globally on all components containing validation configuration.
-
-```ts
-import Vue from 'vue'
-import Fvm from 'form-validation-manager'
-Vue.use(Fvm)
-```
+> **Vue 2 :**  
+> 
+> Import the library and use as a Vue plugin to enable the functionality globally on all components containing > > validation configuration.
+>
+> ```ts
+> import Vue from 'vue'
+> import Fvm from 'form-validation-manager'
+> Vue.use(Fvm)
+> ```
 
 ## Basic usage
 
-### Options API (Vue 2)
+### Vue2 options-api
 
 ```ts
 import { and, required, numeric, gte, length } from 'form-validation-manager'
@@ -141,19 +146,74 @@ a validation oject is generated with the same tree as 'validations'
 *  _$pending_ : node (or sub nodes) wait for an async validation result
 *  _validate : force validation of node (and sub nodes)
 
-### Composition API
+### Vue3 options-api
 
 ```ts
-import { and, required, numeric, gte, length } from 'form-validation-manager'
+import { and, required, numeric, gte, length, useFvm } from 'form-validation-manager'
+
+export default {
+   data () {
+    return {
+      form:{
+        name: '',
+        age: 0
+      }
+    }
+  },
+  validations: {
+    form:{
+      name: and(required(), length(gte(3))),
+      age: and(required(), numeric(), gte(21))
+    }
+  },
+  setup:()=>({ fvm$: useFvm()})
+}
+```
+
+or 
+
+```ts
+import { and, required, numeric, gte, length, useFvm } from 'form-validation-manager'
+
+export default {
+   data () {
+    return {
+      form:{
+        name: '',
+        age: 0
+      }
+    }
+  },
+  setup(){
+    return{
+      fvm$ : useFvm({
+        form:{
+          name: and(required(), length(gte(3))),
+          age: and(required(), numeric(), gte(21))
+        }
+      })
+    }
+  }
+}
+```
+
+validation state is accessible with `fvm$`or `this.fvm$`
+
+### Vue3 Composition API
+
+```ts
+import { and, required, numeric, gte, length, usefvm } from 'form-validation-manager'
 
 export default {
   setup () {
   const form = reactive({
-    val1: 5
+    name: '',
+    age: 0
   });
 
   const validation = useFvm(form, {
-    val1: eq(5)
+    name: and(required(), length(gte(3))),
+    age: and(required(), numeric(), gte(21))
   });
 
   return { validation, form };
@@ -161,27 +221,7 @@ export default {
 }
 ```
 
-```ts
-//generated object
-//validation
-{
-  $errors:String[],
-  $error:Boolean,
-  $isValid:Boolean,
-  $invalid:Boolean,
-  $dirty:Boolean,
-  $pristine:Boolean,
-  $pending:Boolean,
-
-  validate: ()=>void
-
-  val1:{
-    $errors:String[],
-    $error:Boolean,
-    [...]
-  }
-}
-```
+validation state is accessible with `validation`
 
 ## Specials nodes
 ```ts
@@ -304,7 +344,7 @@ export default {
 >```
 >{
 >  0:<possible values : 0,1,2>,
->  list:n<possible values : 0,1,2>,
+>  list:<possible values : 0,1,2>,
 >  length:1
 >}
 >```
