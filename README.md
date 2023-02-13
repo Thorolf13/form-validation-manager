@@ -25,7 +25,6 @@ v1.x.x is only compatible with vue2
 * Model based
 * Decoupled from templates
 * Minimalistic library
-* Only dependent to vue-demi (for compatibility)
 * Support for collection validations
 * Support for nested models
 * Contextified validators
@@ -59,6 +58,8 @@ npm install form-validation-manager --save
 > ```ts
 > import Vue from 'vue'
 > import Fvm from 'form-validation-manager'
+> import * as fvmTypes from 'form-validation-manager/types/vue2';
+>
 > Vue.use(Fvm)
 > ```
 

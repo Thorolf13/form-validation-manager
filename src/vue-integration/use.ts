@@ -1,14 +1,14 @@
 import { Fvm } from "../fvm/fvm";
 import { ValidatorsTree } from "../fvm/types";
-import { UnwrapNestedRefs, ref, Ref, getCurrentInstance, onBeforeMount } from "vue-demi";
+import * as Vue from "vue";
 import { ValidationApi } from "../fvm/api";
 
-function useFvm<T extends ValidatorsTree> (): Ref<ValidationApi<any>>;
-function useFvm<T extends ValidatorsTree> (rules: T): Ref<ValidationApi<T>>;
-function useFvm<T extends ValidatorsTree> (state: UnwrapNestedRefs<any>, rules: T): Ref<ValidationApi<T>>;
-function useFvm<T extends ValidatorsTree> (arg1?: UnwrapNestedRefs<any> | T, arg2?: T): Ref<ValidationApi<T>> {
+function _useFvm<T extends ValidatorsTree> (): Vue.Ref<ValidationApi<any>>;
+function _useFvm<T extends ValidatorsTree> (rules: T): Vue.Ref<ValidationApi<T>>;
+function _useFvm<T extends ValidatorsTree> (state: Vue.UnwrapNestedRefs<any>, rules: T): Vue.Ref<ValidationApi<T>>;
+function _useFvm<T extends ValidatorsTree> (arg1?: Vue.UnwrapNestedRefs<any> | T, arg2?: T): Vue.Ref<ValidationApi<T>> {
 
-  const api: Ref<ValidationApi<T> | undefined> = ref(undefined);
+  const api: Vue.Ref<ValidationApi<T> | undefined> = Vue.ref(undefined);
   const apiProxy = {
     get: () => api.value,
     set: (value: ValidationApi<T>) => api.value = value
@@ -18,11 +18,11 @@ function useFvm<T extends ValidatorsTree> (arg1?: UnwrapNestedRefs<any> | T, arg
 
   if (arg1 && arg2) {
     //composition api
-    fvm = new Fvm(null, arg1, arg2, apiProxy);
+    fvm = new Fvm(null, arg1, arg2, apiProxy, Vue.watch);
     fvm.startValidation();
   } else {
     //options api
-    const componentInstance = getCurrentInstance()?.proxy;
+    const componentInstance = Vue.getCurrentInstance()?.proxy;
     if (!componentInstance) {
       throw new Error('useFvm must be called within a component instance');
     }
@@ -32,13 +32,14 @@ function useFvm<T extends ValidatorsTree> (arg1?: UnwrapNestedRefs<any> | T, arg
     } else {
       fvm = new Fvm(componentInstance, null, componentInstance.$options.validations, apiProxy);
     }
-    onBeforeMount(() => {
+    Vue.onBeforeMount(() => {
       fvm.startValidation();
     })
   }
   return api as any
 }
 
+const useFvm = (Vue.version.startsWith("2.") ? () => { } : _useFvm)
 
 export {
   useFvm

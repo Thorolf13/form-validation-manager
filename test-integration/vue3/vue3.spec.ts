@@ -2,9 +2,7 @@
  * @jest-environment jsdom
  */
 import { mount } from "@vue/test-utils";
-import { watch } from "vue-demi";
 import { custom, eq, Fvm, revalidate } from '../../src';
-// import { itVue23 } from "../test-vue23"
 
 describe('validation - options API', () => {
   it('should have no errors', async () => {

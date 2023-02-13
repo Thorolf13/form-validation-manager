@@ -1,11 +1,10 @@
-import { computed, getCurrentInstance, reactive, Ref, ref } from 'vue-demi';
 import { ValidationApi } from '../fvm/api';
 import { Fvm } from '../fvm/fvm';
 
 const VALIDATIONS_PROPERTY_NAME = 'validations';
 
 function accessData (componentInstance: any) {
-  return componentInstance.$data || componentInstance.$options.data()
+  return componentInstance._data
 }
 
 export default {

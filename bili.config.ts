@@ -1,4 +1,4 @@
-import { Config } from 'bili'
+import { Config } from 'bili';
 
 const config: Config = {
   plugins: {
@@ -9,13 +9,11 @@ const config: Config = {
       }
     }
   },
+
   input: 'src/index.ts',
   output: {
     format: ['esm', 'cjs', 'iife-min'],
-    moduleName: 'Vuelidate'
-  },
-  globals: {
-    'vue-demi': 'VueDemi'
+    moduleName: 'Fvm'
   }
 }
 

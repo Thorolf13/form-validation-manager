@@ -1,8 +1,7 @@
 import { Errors } from "../validators/validator";
-import { computed, reactive, ref, Ref, watch } from "vue-demi";
 import { ValidationNode } from "./validation-node";
 import { get } from "../commons/lodash";
-import { Watcher } from "./watcher";
+import { Watcher, WatchFn } from "./watcher";
 
 
 type _Errors = Errors | '__pending__';
@@ -19,7 +18,7 @@ export class State {
 
   protected isRunning = false;
 
-  constructor (public componentInstance: any, private componentState: any, private onUpdate: () => void) {
+  constructor (public componentInstance: any, private componentState: any, private onUpdate: () => void, private watchFn?: WatchFn) {
   }
 
   registerValidationNode (path: string, validationNode: ValidationNode<any>) {
@@ -46,13 +45,7 @@ export class State {
     const oldValue = this.errors[path];
     this.errors[path] = errors;
 
-    if (oldValue !== errors) {
-      this.onUpdate();
-    }
-
-    // if (this.componentInstance?.$forceUpdate && oldValue !== errors) {
-    //   this.componentInstance.$forceUpdate();
-    // }
+    this.onUpdate();
   }
 
   getErrors (path: string) {
@@ -96,7 +89,7 @@ export class State {
 
   watch (propertyPath: string, callback: (newValue: any, oldValue: any) => void, options: { deep?: boolean, immediate?: boolean; }) {
     this.watchers.push(
-      new Watcher(this.componentInstance, propertyPath, () => this.getPropertyValue(propertyPath), callback, options)
+      new Watcher(this.componentInstance, propertyPath, () => this.getPropertyValue(propertyPath), callback, options, this.watchFn)
     )
   }
 

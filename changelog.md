@@ -1,3 +1,12 @@
+## 2.2.4
+* revert creation of @types/form-validation-manager-vue2 package
+* create d.ts file for typescript-vue2
+* update doc
+
+## 2.2.3
+* fix types
+* extract specifique vue2 type to @types/form-validation-manager-vue2 package
+
 ## 2.2.2
 * fix doc
 

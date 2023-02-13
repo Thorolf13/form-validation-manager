@@ -103,32 +103,10 @@ export function includes (str: string): Validator;
 export function isDate (format?: string): Validator;
 export function isString (): Validator;
 export function regexp (regexp: RegExp): Validator;
-export function async (callback: Promise<boolean | string | (boolean | string)[]>, forceRenderUpdateAuto?: boolean, debounceTime?: number): Validator;
-export function custom (callback: boolean | string | (boolean | string)[]): Validator;
+export function async (callback: (this: any, value: any, context: Context) => Promise<boolean | string | (boolean | string)[]>, debounceTime?: number): Validator;
+export function custom (callback: (this: any, value: any, context: Context) => boolean | string | (boolean | string)[]): Validator;
 export function empty (): Validator;
 export function length (validator: Validator): Validator;
 export function pick (property: string, validator: Validator): Validator;
 export function revalidate (...paths: string[]): Validator;
 export function withMessage (validator: Validator, message: string): Validator;
-
-
-// import Vue from 'vue';
-declare module 'vue/types/vue' {
-  type ValidatorTree<V> = {
-    [K in Exclude<keyof V, '$fvm'>]?: Validator | ValidatorTree<V[K]>;
-  };
-
-
-  interface Vue {
-    $fvm: ValidationApi<Vue>;
-  }
-}
-
-declare module 'vue/types/options' {
-
-
-
-  interface ComponentOptions {
-    validations?: ValidatorTree;
-  }
-}

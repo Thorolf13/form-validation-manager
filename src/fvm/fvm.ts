@@ -1,7 +1,6 @@
-import { ref } from "vue-demi";
-// import { EventEmitter } from "../commons/event"
 import { State } from "../validation/state";
 import { ValidationNode } from "../validation/validation-node";
+import { WatchFn } from "../validation/watcher";
 import { buildApi, ValidationApi } from "./api";
 import { ValidatorsTree } from "./types";
 
@@ -18,13 +17,13 @@ export class Fvm<T extends ValidatorsTree> {
 
   private isRunning = false;
 
-  constructor (private component: any | null, private state: any | null, public validators: T, private apiProxy: ApiProxy<T>) {
+  constructor (private component: any | null, private state: any | null, public validators: T, private apiProxy: ApiProxy<T>, watchFn?: WatchFn) {
     // this.events = new EventEmitter();
     this.internalState = new State(this.component, this.state, () => {
       if (this.isRunning) {
         this.buildApi()
       }
-    });
+    }, watchFn);
     this.rootNode = new ValidationNode('', null, this.validators, this.internalState);
 
     this.buildApi();

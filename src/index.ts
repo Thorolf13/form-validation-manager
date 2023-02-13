@@ -33,7 +33,7 @@ import optional from './validators/logic/optional';
 
 import { Validator, Context } from './validators/validator'
 
-import mixin from './vue-integration/mixin';
+import mixin from './vue-integration/mixin-vue2';
 import { useFvm } from './vue-integration/use';
 
 

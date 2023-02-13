@@ -5,7 +5,6 @@
     "target": "es2015",
     "module": "commonjs",
     "sourceMap": true,
-    // "declaration": true,
     "removeComments": true,
     "strict": true,
     "outDir": "dist",
