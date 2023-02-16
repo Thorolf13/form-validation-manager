@@ -1,0 +1,20 @@
+{
+  "name": "fvm-commons",
+  "version": "2.3.0",
+  "description": "form-validation-manager's sub-package commons",
+  "author": "thorolf13@gmail.com",
+  "homepage": "https://github.com/Thorolf13/form-validation-manager",
+  "license": "LGPL3",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "scripts": {
+    "build": "bili",
+    "test": "mocha -r ts-node/register 'tests/**/*.ts'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bili": "^5.0.5",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "typescript": "^4.9.4"
+  }
+}

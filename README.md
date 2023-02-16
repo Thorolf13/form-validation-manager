@@ -57,8 +57,11 @@ npm install form-validation-manager --save
 >
 > ```ts
 > import Vue from 'vue'
-> import Fvm from 'form-validation-manager'
-> import * as fvmTypes from 'form-validation-manager/types/vue2';
+> import Fvm from 'form-validation-manager/vue2'
+>
+> //for typescript
+> import * as fvmTypes from 'form-validation-manager/vue2/types';
+> import * as fvmTypesValidators from 'form-validation-manager/validators/types';
 >
 > Vue.use(Fvm)
 > ```
@@ -68,7 +71,7 @@ npm install form-validation-manager --save
 ### Vue2 options-api
 
 ```ts
-import { and, required, numeric, gte, length } from 'form-validation-manager'
+import { and, required, numeric, gte, length } from 'form-validation-manager/validators'
 
 export default {
   data () {
@@ -150,7 +153,8 @@ a validation oject is generated with the same tree as 'validations'
 ### Vue3 options-api
 
 ```ts
-import { and, required, numeric, gte, length, useFvm } from 'form-validation-manager'
+import { and, required, numeric, gte, length } from 'form-validation-manager/validators'
+import { useFvm } from 'form-validation-manager/vue3'
 
 export default {
    data () {
@@ -174,7 +178,8 @@ export default {
 or 
 
 ```ts
-import { and, required, numeric, gte, length, useFvm } from 'form-validation-manager'
+import { and, required, numeric, gte, length } from 'form-validation-manager/validators'
+import { useFvm } from 'form-validation-manager/vue3'
 
 export default {
    data () {
@@ -203,7 +208,8 @@ validation state is accessible with `fvm$`or `this.fvm$`
 ### Vue3 Composition API
 
 ```ts
-import { and, required, numeric, gte, length, usefvm } from 'form-validation-manager'
+import { and, required, numeric, gte, length} from 'form-validation-manager/validators'
+import { useFvm } from 'form-validation-manager/vue3'
 
 export default {
   setup () {
@@ -419,7 +425,7 @@ optional `indexes` : contain `$each` loops indexes, see [$each](##Arrays) sectio
 You may want to define a validator and use it in different components\
 best way is to define it in separate .js file
 ```ts
-import { Validator } from 'form-validation-manager';
+import { Validator } from 'form-validation-manager/validators';
 
 export default function myValidator(arg1, arg2) {
   return new Validator('myValidator', (value:any, context:Context) => {

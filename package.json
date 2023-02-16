@@ -1,94 +1,47 @@
 {
   "name": "form-validation-manager",
-  "version": "2.2.8",
+  "version": "2.3.0",
   "description": "VueJs validation manager, model based",
-  "main": "dist/index.js",
-  "types": "types/index.d.ts",
-  "module": "dist/index.esm.js",
-  "unpkg": "dist/index.iife.min.js",
-  "jsdelivr": "dist/index.iife.min.js",
-  "scripts": {
-    "build": "bili",
-    "test": "nyc mocha -r ts-node/register 'test/**/*.ts'",
-    "test-validators": "mocha -r ts-node/register 'test/validators/**/*.ts'",
-    "test-validation": "mocha -r ts-node/register 'test/validation/**/*.ts'",
-    "test-fvm": "mocha -r ts-node/register 'test/fvm/**/*.ts'",
-    "test-vue3": "vue-cli-service test:unit test-integration/vue3/",
-    "test-vue2": "npm run build && cd test-integration/vue2 && npm run test",
-    "prepublish": "npm run build"
-  },
   "author": "thorolf13@gmail.com",
   "homepage": "https://github.com/Thorolf13/form-validation-manager",
   "license": "LGPL3",
+  "main": "./vue3/dist/index.js",
+  "module": "./vue3/dist/index.ems.js",
+  "types": "./vue3/types/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.js"
+    "validators": {
+      "import": "./validators/dist/index.ems.js",
+      "require": "./validators/dist/index.js"
     },
-    "./*": "./*"
+    "vue2": {
+      "import": "./vue2/dist/index.ems.js",
+      "require": "./vue2/dist/index.js"
+    },
+    "vue3": {
+      "import": "./vue3/dist/index.ems.js",
+      "require": "./vue3/dist/index.js"
+    }
   },
+  "scripts": {
+    "lerna-build": "lerna run build --parallel",
+    "copy-packages": "node ./scripts/copy-packages.mjs",
+    "clean": "node ./scripts/clean.mjs",
+    "build": "npm run clean && npm run lerna-build && npm run copy-packages",
+    "pack": "cd dist && npm pack",
+    "publish": "cd dist && npm publish"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/preset-env": "^7.20.2",
-    "@types/chai": "^4.3.4",
-    "@types/mocha": "^10.0.1",
-    "@vue/cli-plugin-unit-jest": "^5.0.8",
-    "@vue/cli-service": "^5.0.8",
-    "@vue/test-utils": "^2.2.7",
-    "@vue/vue3-jest": "^27.0.0",
-    "babel-jest": "^27.0.0",
-    "babel-loader": "^9.1.2",
     "bili": "^5.0.5",
     "chai": "^4.3.7",
+    "cpy": "^9.0.1",
+    "lerna": "^6.5.1",
     "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
     "rollup-plugin-typescript2": "^0.34.1",
-    "ts-jest": "^27.0.0",
     "ts-loader": "^9.4.2",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "typescript": "^4.9.4",
-    "typescript-declaration-webpack-plugin": "^0.2.2",
-    "vue": "^3.2.45",
-    "vue-template-compiler": "^2.7.14",
-    "vue2": "npm:vue@^2.0.0",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
-  },
-  "peerDependencies": {
-    "vue": "^2.0.0 || >=3.0.0"
-  },
-  "files": [
-    "dist/*",
-    "src/*",
-    "types/*"
-  ],
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true,
-      "jest": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {
-      "vue/script-setup-uses-vars": "off"
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
-        ],
-        "env": {
-          "jest": true
-        }
-      }
-    ]
+    "typescript": "^4.9.5",
+    "vue": "^3.2.45"
   }
 }
