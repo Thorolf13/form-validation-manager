@@ -1,3 +1,9 @@
+## 2.3.0
+* rebuild project with monorepo arch
+* temporary disable tests
+* reduild types definitions
+* update documentation
+
 ## 2.2.4
 * revert creation of @types/form-validation-manager-vue2 package
 * create d.ts file for typescript-vue2
