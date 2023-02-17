@@ -1,6 +1,6 @@
 {
   "name": "fvm-validators",
-  "version": "2.3.0",
+  "version": "2.3.0-beta.1",
   "description": "form-validation-manager's sub-package validators",
   "author": "thorolf13@gmail.com",
   "homepage": "https://github.com/Thorolf13/form-validation-manager",

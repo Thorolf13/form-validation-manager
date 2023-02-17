@@ -1,6 +1,6 @@
 {
   "name": "form-validation-manager",
-  "version": "2.3.0",
+  "version": "2.3.0-beta.1",
   "description": "VueJs validation manager, model based",
   "author": "thorolf13@gmail.com",
   "homepage": "https://github.com/Thorolf13/form-validation-manager",
@@ -26,9 +26,10 @@
     "lerna-build": "lerna run build --parallel",
     "copy-packages": "node ./scripts/copy-packages.mjs",
     "clean": "node ./scripts/clean.mjs",
-    "build": "npm run clean && npm run lerna-build && npm run copy-packages",
+    "build": "npm run set-version && npm run clean && npm run lerna-build && npm run copy-packages",
     "pack": "cd dist && npm pack",
-    "publish": "cd dist && npm publish"
+    "publish": "cd dist && npm publish",
+    "set-version": "node ./scripts/set-version.mjs"
   },
   "workspaces": [
     "packages/*"
