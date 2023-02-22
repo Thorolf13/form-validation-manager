@@ -1,0 +1,19 @@
+{
+  "name": "fvm-vue2",
+  "version": "2.3.0-beta.5",
+  "description": "form-validation-manager's sub-package vue2",
+  "author": "thorolf13@gmail.com",
+  "homepage": "https://github.com/Thorolf13/form-validation-manager",
+  "license": "LGPL3",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "build": "bili",
+    "test": "mocha -r ts-node/register 'tests/**/*.ts'"
+  },
+  "peerDependencies": {
+    "fvm-core": "*",
+    "vue2": "npm:vue@^2.0.0"
+  }
+}
