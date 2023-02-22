@@ -86,7 +86,7 @@ export class ValidationNode<T extends ValidatorsTree<T>> {
 
   protected parseIndexes (path: string) {
     const indexes: Indexes = { length: 0 };
-    const reg = /(\w+)\[(\d+)\]/g;
+    const reg = /(\w+)\.\$each\[(\d+)\]/g;
 
     let match;
     while (match = reg.exec(path)) {

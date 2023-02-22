@@ -20,6 +20,10 @@ export type ValidationApi<T> = {
 
 
 function buildApi<T> (node: ValidationNode<T>): ValidationApi<T> {
+  return proxyfyWithDefaultValues(_buildApi(node));
+}
+
+function _buildApi<T> (node: ValidationNode<T>): ValidationApi<T> {
   const api: any = {
 
     get $errors () {
@@ -43,11 +47,58 @@ function buildApi<T> (node: ValidationNode<T>): ValidationApi<T> {
   };
 
   for (const child in node.children) {
-    api[child] = buildApi(node.children[child]);
+    api[child] = _buildApi(node.children[child]);
   }
 
   return api;
 }
+
+function recursiveProxifyWithDefaultValues<T extends {}> (obj: T, dontProxify: string[], defaultValue: any): T {
+  const proxifiedChildren: any = {};
+  for (const key in obj) {
+    if (!dontProxify.includes(key)) {
+      proxifiedChildren[key] = recursiveProxifyWithDefaultValues((obj as any)[key], dontProxify, defaultValue);
+    }
+  }
+
+  const handler = {
+    get (target: any, prop: string) {
+      if (dontProxify.includes(prop)) {
+        return target[prop];
+      } else {
+        if (proxifiedChildren[prop]) {
+          return proxifiedChildren[prop];
+        } else {
+          return recursiveProxifyWithDefaultValues(Object.assign({}, defaultValue) /* make a copy */, dontProxify, defaultValue);
+        }
+      }
+    }
+
+  };
+
+  return new Proxy(obj, handler);
+}
+
+
+function proxyfyWithDefaultValues<T> (api: ValidationApi<T>): ValidationApi<T> {
+  return recursiveProxifyWithDefaultValues(
+    api,
+    ['$errors', '$error', '$invalid', '$valid', '$isValid', '$dirty', '$pristine', '$pending', 'setDirty', 'validate'],
+    {
+      $errors: [],
+      $error: null,
+      $invalid: null,
+      $valid: null,
+      $isValid: null,
+      $dirty: null,
+      $pristine: null,
+      $pending: null,
+      setDirty: () => { },
+      validate: () => { }
+    }
+  );
+}
+
 
 
 export { buildApi }
